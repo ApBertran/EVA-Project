@@ -1,6 +1,0 @@
-11/14/2022
-Dev Time: 5 Hours
-
-Made a lot of progress with syncing music with lights, but it feels choppy and it's incredibly difficult to sync up correctly.
-I've decided to scrap the idea of syncing music with lights and stick to simply getting light control with the GUI.
-Will possibly revisit music syncing in the future.
