@@ -20,3 +20,7 @@ To be filled out
 - Music from bluetooth
 - Power from cigarette lighters
 - Display in double din, replacing old head unit
+### GUI
+- One page for maps
+- One page for LED and volume control
+- One page for data logs and maintenance
