@@ -150,13 +150,13 @@ class App(customtkinter.CTk):
     
     # Receive slider values for LED
     def pass_red_led(self, value):
-        print(f"R: {value}")
+        #print(f"R: {value}")
         self.change_colors()
     def pass_green_led(self, value):
-        print(f"G: {value}")
+        #print(f"G: {value}")
         self.change_colors()
     def pass_blue_led(self, value):
-        print(f"B: {value}")
+        #print(f"B: {value}")
         self.change_colors()
     def led_switch(self):
         print("Lights toggled")
@@ -168,16 +168,14 @@ class App(customtkinter.CTk):
             self.redRGB = int(self.led_frame_r_slider.get())
             self.greenRGB = int(self.led_frame_g_slider.get())
             self.blueRGB = int(self.led_frame_b_slider.get())
-            #print(f"R: {self.redRGB} G: {self.greenRGB} B: {self.blueRGB}")
+            print(f"R: {self.redRGB} G: {self.greenRGB} B: {self.blueRGB}")
+            ser.write(bytes("r" + chr(self.redRGB), 'utf-8'))
+            ser.write(bytes("g" + chr(self.greenRGB), 'utf-8'))
+            ser.write(bytes("b" + chr(self.blueRGB), 'utf-8'))
         else:
             self.redRGB = 0
             self.greenRGB = 0
             self.blueRGB = 0
-        
-        ser.write(bytes("r" + chr(self.redRGB), 'utf-8'))
-        ser.write(bytes("g" + chr(self.greenRGB), 'utf-8'))
-        ser.write(bytes("b" + chr(self.blueRGB), 'utf-8'))
-
 
 if __name__ == "__main__":
     app = App()
