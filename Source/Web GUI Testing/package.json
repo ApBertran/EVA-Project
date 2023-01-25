@@ -1,0 +1,14 @@
+{
+  "name": "electron-gui",
+  "version": "1.0.0",
+  "description": "EVA-Project GUI",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Alex Bertran",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^22.1.0"
+  }
+}
