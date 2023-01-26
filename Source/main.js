@@ -10,7 +10,7 @@ const createWindow = () => {
     }
   })
 
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('gui.html')
 }
 
 app.whenReady().then(() => {

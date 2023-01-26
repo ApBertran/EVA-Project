@@ -1,9 +1,20 @@
-# Program Explanations
+# Web Based GUI
 
-## symlink_ctk.py
+## Important Info
 
-Creates a symlink that is necessary for the use of tkinter and customtkinter on some devices. Acts as a backup in case tkinter doesn't work on a device.
+### Used Languages:
+HTML, CSS, Javascript, Python
 
-## GUI.py
+### Electron Version:
+electron@v22.1.0
 
-Contains all the code for the gui in python. Also contains the code for controlling the LED lights and integration of other features.
+### Required Stuff:
+* need node.js for electron
+* run `npm start` in the correct directory to start gui
+
+## Useful Links
+* https://www.electronjs.org/docs/latest/tutorial/quick-start
+* https://reactjs.org/
+* https://www.electronforge.io/
+* https://jojozhuang.github.io/tutorial/converting-web-app-to-desktop-app-with-electron/
+* https://releases.electronjs.org/release/v22.1.0

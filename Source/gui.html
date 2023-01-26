@@ -1,17 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Test Website</title>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
-  </head>
-  <body>
-    <main>
-        <h1>This is a test website</h1>  
-    </main>
-	<script src="index.js"></script>
-  </body>
-</html>
+<html>
+<head>
+<!-- <link rel="stylesheet" href="navGUI.css"> -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+  height: 100%;
+  width: 150px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #252655;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.sidenav a {
+  padding: 20px 6px 10px 11px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.main {
+  margin-left: 200px; /* Same as the width of the sidenav */
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidenav">
+  <a href="#"><img src="Images/Maps.png" style="width:128px;height:128px;"></a>
+  <a href="#"><img src="Images/Volume.png" style="width:128px;height:128px;"></a>
+  <a href="#"><img src="Images/LED.png" style="width:128px;height:128px;"></a>
+  <a href="#"><img src="Images/Logs.png" style="width:128px;height:128px;"></a>
+</div>
+
+<div class="main">
+  <h2>Testing</h2>
+  <p>Testing but smaller</p>
+</div>
+   
+</body>
+</html> 
