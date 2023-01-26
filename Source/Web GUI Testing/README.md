@@ -13,8 +13,8 @@ electron@v22.1.0
 * run `npm start` in the correct directory to start gui
 
 ## Useful Links
-https://www.electronjs.org/docs/latest/tutorial/quick-start
-https://reactjs.org/
-https://www.electronforge.io/
-https://jojozhuang.github.io/tutorial/converting-web-app-to-desktop-app-with-electron/
-https://releases.electronjs.org/release/v22.1.0
+* https://www.electronjs.org/docs/latest/tutorial/quick-start
+* https://reactjs.org/
+* https://www.electronforge.io/
+* https://jojozhuang.github.io/tutorial/converting-web-app-to-desktop-app-with-electron/
+* https://releases.electronjs.org/release/v22.1.0
