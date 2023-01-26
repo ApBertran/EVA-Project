@@ -1,6 +1,13 @@
+# Web Based GUI
+
 ## Important Info
+
+### Used Languages:
+HTML, CSS, Javascript, Python
+
 ### Electron Version:
 electron@v22.1.0
+
 ### Required Stuff:
 * need node.js for electron
 * run `npm start` in the correct directory to start gui
