@@ -4,9 +4,6 @@ const path = require('path')
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
     fullscreen: true,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
   })
 
   mainWindow.loadFile('gui.html')
