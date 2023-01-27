@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- <link rel="stylesheet" href="navGUI.css"> -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body {
   font-family: "Lato", sans-serif;
+  background-color: #191A39;
 }
 
 .sidenav {
@@ -17,44 +17,92 @@ body {
   left: 0;
   background-color: #252655;
   overflow-x: hidden;
-  padding-top: 20px;
+  margin: auto;
+  border: 5px solid #313267;
 }
 
-.sidenav a {
+.sidenav button {
   padding: 20px 6px 10px 11px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
+  background-color: #252655;
+  border: 5px solid #252655;
   display: block;
+  transition: 0.3s;
 }
 
-.sidenav a:hover {
+.sidenav button:hover {
+  background-color: #313267;
+  border: 5px solid #313267;
+}
+
+.sidenav button.active {
+  background-color: #313267;
+  border: 5px solid #313267;
+}
+
+.tabcontent {
+  display: none;
   color: #f1f1f1;
+  margin-left: 200px;
 }
 
 .main {
   margin-left: 200px; /* Same as the width of the sidenav */
+  color: #f1f1f1;
 }
 
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  .sidenav button {font-size: 18px;}
 }
 </style>
 </head>
 <body>
 
 <div class="sidenav">
-  <a href="#"><img src="Images/Maps.png" style="width:128px;height:128px;"></a>
-  <a href="#"><img src="Images/Volume.png" style="width:128px;height:128px;"></a>
-  <a href="#"><img src="Images/LED.png" style="width:128px;height:128px;"></a>
-  <a href="#"><img src="Images/Logs.png" style="width:128px;height:128px;"></a>
+  <button class="tablinks" onclick="openTab(event, 'Maps')"><img src="Images/Maps.png" style="width:128px;height:128px;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Music')"><img src="Images/Volume.png" style="width:128px;height:128px;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Lights')"><img src="Images/LED.png" style="width:128px;height:128px;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Logs')"><img src="Images/Logs.png" style="width:128px;height:128px;"></button>
 </div>
 
-<div class="main">
-  <h2>Testing</h2>
-  <p>Testing but smaller</p>
+<div id="Maps" class="tabcontent">
+  <h2>testing for maps</h2>
 </div>
-   
+
+<div id="Music" class="tabcontent">
+  <h2>testing for music</h2>
+</div>
+
+<div id="Lights" class="tabcontent">
+  <h2>testing for lights</h2>
+</div>
+
+<div id="Logs" class="tabcontent">
+  <h2>testing for logs</h2>
+</div>
+
+<script>
+  function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+  
+    // Hide all elements with class="tabcontent"
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for(i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+  
+    // Remove "active" class from all elements with class="tablinks"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+  
+    // Show current tab and add "active" class to button
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  
+  }
+</script>
+
 </body>
 </html> 
