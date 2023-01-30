@@ -22,7 +22,7 @@ body {
 }
 
 .sidenav button {
-  margin: auto;
+  /* margin-left: -13%; */
   background-color: #252655;
   border: 5px solid #252655;
   display: block;
@@ -62,19 +62,21 @@ body {
   padding: 34%;
 }
 
+/*
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
   .sidenav button {font-size: 18px;}
 }
+*/
 </style>
 </head>
 <body>
 
 <div class="sidenav">
-  <button class="tablinks" onclick="openTab(event, 'Maps')"><img src="../Images/Maps.png" style="width:120%;height:120%;"></button>
-  <button class="tablinks" onclick="openTab(event, 'Music')"><img src="../Images/Volume.png" style="width:128px;height:128px;"></button>
-  <button class="tablinks" onclick="openTab(event, 'Lights')"><img src="../Images/LED.png" style="width:128px;height:128px;"></button>
-  <button class="tablinks" onclick="openTab(event, 'Logs')"><img src="../Images/Logs.png" style="width:128px;height:128px;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Maps')"><img src="../Images/Maps.png" style="width:130%;height:130%;margin-left:-13%;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Music')"><img src="../Images/Volume.png" style="width:130%;height:130%;margin-left:-13%;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Lights')"><img src="../Images/LED.png" style="width:130%;height:130%;margin-left:-13%;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Logs')"><img src="../Images/Logs.png" style="width:130%;height:130%;margin-left:-13%;"></button>
 </div>
 
 <div id="Maps" class="tabcontent">
