@@ -1,0 +1,65 @@
+body {
+  font-family: "Lato", sans-serif;
+  background-color: #191A39;
+}
+
+.sidenav {
+  height: 100%;
+  width: 10%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #252655;
+  overflow-x: hidden;
+  margin: auto;
+  border: 5px solid #313267;
+}
+
+.sidenav button {
+  /* margin-left: -13%; */
+  background-color: #252655;
+  border: 5px solid #252655;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav button:hover {
+  background-color: #313267;
+  border: 5px solid #313267;
+}
+
+.sidenav button.active {
+  background-color: #313267;
+  border: 5px solid #313267;
+}
+
+.tabcontent {
+  display: none;
+  color: #f1f1f1;
+  margin-left: 10%;
+  width: 90%;
+  height: 100%;
+}
+
+.tabcontent a {
+  padding: 30px;
+  color: #f1f1f1;
+  margin: auto;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.mapdirections {
+  width: 40%;
+  height: 100%;
+  display: block;
+  padding: 34%;
+}
+
+/*
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav button {font-size: 18px;}
+}
+*/
