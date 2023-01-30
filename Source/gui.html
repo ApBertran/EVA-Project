@@ -10,7 +10,7 @@ body {
 
 .sidenav {
   height: 100%;
-  width: 150px;
+  width: 10%;
   position: fixed;
   z-index: 1;
   top: 0;
@@ -22,7 +22,7 @@ body {
 }
 
 .sidenav button {
-  padding: 20px 6px 10px 11px;
+  margin: auto;
   background-color: #252655;
   border: 5px solid #252655;
   display: block;
@@ -42,7 +42,9 @@ body {
 .tabcontent {
   display: none;
   color: #f1f1f1;
-  margin-left: 200px;
+  margin-left: 10%;
+  width: 90%;
+  height: 100%;
 }
 
 .tabcontent a {
@@ -53,9 +55,11 @@ body {
   font-weight: bold;
 }
 
-.main {
-  margin-left: 200px; /* Same as the width of the sidenav */
-  color: #f1f1f1;
+.mapdirections {
+  width: 40%;
+  height: 100%;
+  display: block;
+  padding: 34%;
 }
 
 @media screen and (max-height: 450px) {
@@ -67,14 +71,14 @@ body {
 <body>
 
 <div class="sidenav">
-  <button class="tablinks" onclick="openTab(event, 'Maps')"><img src="Images/Maps.png" style="width:128px;height:128px;"></button>
-  <button class="tablinks" onclick="openTab(event, 'Music')"><img src="Images/Volume.png" style="width:128px;height:128px;"></button>
-  <button class="tablinks" onclick="openTab(event, 'Lights')"><img src="Images/LED.png" style="width:128px;height:128px;"></button>
-  <button class="tablinks" onclick="openTab(event, 'Logs')"><img src="Images/Logs.png" style="width:128px;height:128px;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Maps')"><img src="../Images/Maps.png" style="width:120%;height:120%;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Music')"><img src="../Images/Volume.png" style="width:128px;height:128px;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Lights')"><img src="../Images/LED.png" style="width:128px;height:128px;"></button>
+  <button class="tablinks" onclick="openTab(event, 'Logs')"><img src="../Images/Logs.png" style="width:128px;height:128px;"></button>
 </div>
 
 <div id="Maps" class="tabcontent">
-  <a>testing for maps</a>
+  <div id="googleMap" class="mapdirections"></div>
 </div>
 
 <div id="Music" class="tabcontent">
@@ -111,6 +115,18 @@ body {
   
   }
 </script>
+
+<script>
+  function myMap() {
+  var mapProp= {
+    center:new google.maps.LatLng(38.582050319897576, -121.4957924551412),
+    zoom:12,
+  };
+  var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
+  }
+</script>
+
+<script type="text/javascript" src="mapConfig.js"></script>
 
 </body>
 </html> 
