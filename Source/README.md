@@ -12,8 +12,9 @@ electron@v22.1.0
 * need node.js for electron
 * run `npm start` in the correct directory to start gui
 
-### NPM Installs:
+### Installs:
 * npm install electron@v22.1.0
+* pip install pyserial
 
 ## Useful Links:
 * https://www.electronjs.org/docs/latest/tutorial/quick-start
