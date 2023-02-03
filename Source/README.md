@@ -12,7 +12,12 @@ electron@v22.1.0
 * need node.js for electron
 * run `npm start` in the correct directory to start gui
 
-## Useful Links
+### NPM Installs:
+* npm install electron@v22.1.0
+* npm install socket.io-client
+* npm install screenshot-desktop
+
+## Useful Links:
 * https://www.electronjs.org/docs/latest/tutorial/quick-start
 * https://reactjs.org/
 * https://www.electronforge.io/
