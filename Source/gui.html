@@ -9,61 +9,37 @@
 
     <div class="sidenav">
       <button class="tablinks" onclick="openTab(event, 'Maps')"><img src="../Images/Maps.png" style="width:130%;height:130%;margin-left:-13%;"></button>
-      <button class="tablinks" onclick="openTab(event, 'Music')"><img src="../Images/Volume.png" style="width:130%;height:130%;margin-left:-13%;"></button>
       <button class="tablinks" onclick="openTab(event, 'Lights')"><img src="../Images/LED.png" style="width:130%;height:130%;margin-left:-13%;"></button>
+      <button class="tablinks" onclick="openTab(event, 'Video')"><img src="../Images/Video.png" style="width:130%;height:130%;margin-left:-13%;"></button>
       <button class="tablinks" onclick="openTab(event, 'Logs')"><img src="../Images/Logs.png" style="width:130%;height:130%;margin-left:-13%;"></button>
+      <button class="tablinks" onclick="openTab(event, 'Track')"><img src="../Images/Performance.png" style="width:130%;height:130%;margin-left:-13%;"></button>
     </div>
 
     <div id="Maps" class="tabcontent">
       <div id="googleMap" class="mapdirections"></div>
     </div>
 
-    <div id="Music" class="tabcontent">
-      <h2>testing for music</h2>
+    <div id="Lights" class="tabcontent">
+      <h2> testing for lights</h2>
     </div>
 
-    <div id="Lights" class="tabcontent">
-      <h2>testing for lights</h2>
+    <div id="Video" class="tabcontent">
+      <h2> testing for video</h2>
     </div>
 
     <div id="Logs" class="tabcontent">
-      <h2>testing for logs</h2>
+      <h2> testing for logs</h2>
     </div>
 
-    <script>
-      function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-      
-        // Hide all elements with class="tabcontent"
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for(i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].style.display = "none";
-        }
-      
-        // Remove "active" class from all elements with class="tablinks"
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-          tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-      
-        // Show current tab and add "active" class to button
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
-      
-      }
-    </script>
+    <div id="Track" class="tabcontent">
+      <h2>testing for track</h2>
+    </div>
 
-    <script>
-      function myMap() {
-      var mapProp= {
-        center:new google.maps.LatLng(38.582050319897576, -121.4957924551412),
-        zoom:12,
-      };
-      var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);
-      }
-    </script>
+    <script type="text/javascript" src="navMenu.js"></script> <!-- move between pages of the nav menu -->
 
-    <script type="text/javascript" src="mapConfig.js"></script> <!-- Script for google maps, kept in separate js file -->
+    <script type="text/javascript" src="mapInit.js"></script> <!-- initialize the map and display it -->
+
+    <script type="text/javascript" src="mapConfig.js"></script> <!-- google maps config -->
 
   </body>
 </html> 

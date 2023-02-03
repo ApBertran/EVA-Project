@@ -1,6 +1,6 @@
 body {
   font-family: "Lato", sans-serif;
-  background-color: #191A39;
+  background-color: #660000;
 }
 
 .sidenav {
@@ -10,34 +10,35 @@ body {
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #252655;
+  background-color: #5a0000;
   overflow-x: hidden;
   margin: auto;
-  border: 5px solid #313267;
+  border: 5px solid #730000;
 }
 
 .sidenav button {
   /* margin-left: -13%; */
-  background-color: #252655;
-  border: 5px solid #252655;
+  background-color: #5a0000;
+  border: 5px solid #5a0000;
   display: block;
   transition: 0.3s;
 }
 
 .sidenav button:hover {
-  background-color: #313267;
-  border: 5px solid #313267;
+  background-color: #730000;
+  border: 5px solid #730000;
 }
 
 .sidenav button.active {
-  background-color: #313267;
-  border: 5px solid #313267;
+  background-color: #730000;
+  border: 5px solid #730000;
 }
 
 .tabcontent {
   display: none;
   color: #f1f1f1;
   margin-left: 10%;
+  /* padding-left: 1%; */
   width: 90%;
   height: 100%;
 }
@@ -51,10 +52,10 @@ body {
 }
 
 .mapdirections {
-  width: 40%;
+  width: 31.7%;
   height: 100%;
   display: block;
-  padding: 34%;
+  padding: 34.4%;
 }
 
 /*
