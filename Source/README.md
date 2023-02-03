@@ -17,6 +17,7 @@ electron@v22.1.0
 * npm install socket.io-client
 * npm install screenshot-desktop
 * npm install uuid
+* npm install express
 
 ## Useful Links:
 * https://www.electronjs.org/docs/latest/tutorial/quick-start
