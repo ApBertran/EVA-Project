@@ -14,6 +14,7 @@ electron@v22.1.0
 
 ### Installs:
 * npm install electron@v22.1.0
+* npm install express
 * pip install pyserial
 
 ## Useful Links:
