@@ -1,4 +1,5 @@
 import serial
+import sys
 
 # Setup the Serial Object
 ser = serial.Serial()

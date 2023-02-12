@@ -10,5 +10,8 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^22.1.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
   }
 }
