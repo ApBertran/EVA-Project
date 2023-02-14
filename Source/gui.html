@@ -20,7 +20,15 @@
     </div>
 
     <div id="Lights" class="tabcontent">
-      <h2> testing for lights</h2>
+      <iframe class="colorbox"></iframe>
+      <div class="slidecontainer">
+        <input type="range" min="0" max="255" value="0" class="slider" id="redRange">
+        <input type="range" min="0" max="255" value="0" class="slider" id="greenRange">
+        <input type="range" min="0" max="255" value="0" class="slider" id="blueRange">
+        <p hidden><span id="redVal"></span></p>
+        <p hidden><span id="greenVal"></span></p>
+        <p hidden><span id="blueVal"></span></p>
+      </div>
     </div>
 
     <div id="Video" class="tabcontent">
@@ -40,6 +48,8 @@
     <script type="text/javascript" src="mapInit.js"></script> <!-- initialize the map and display it -->
 
     <script type="text/javascript" src="mapConfig.js"></script> <!-- google maps config -->
+
+    <script type="text/javascript" src="sliders.js"></script> <!-- script for sliders -->
 
   </body>
 </html> 
