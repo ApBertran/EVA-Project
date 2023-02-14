@@ -110,6 +110,7 @@ body {
   background: rgb(var(--redVal), var(--greenVal), var(--blueVal));
   padding: 15%;
   margin-left: 10%;
+  border: 5px solid #5a0000;
 }
 
 /*
