@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styleEntry.css">
+</head>
+<body>
+    <div id="container">  
+        <ul id="keyboard">   
+            <li class="letter" onclick="enterCode('1')">1</li>  
+            <li class="letter" onclick="enterCode('2')">2</li>  
+            <li class="letter" onclick="enterCode('3')">3</li>  
+            <li class="letter clearl" onclick="enterCode('4')">4</li>  
+            <li class="letter" onclick="enterCode('5')">5</li>  
+            <li class="letter" onclick="enterCode('6')">6</li> 
+          
+            <li class="letter clearl" onclick="enterCode('7')">7</li>
+            <li class="letter " onclick="enterCode('8')">8</li>  
+            <li class="letter" onclick="enterCode('9')">9</li>  
+            <li class="letter clearl lastitem" onclick="enterCode('0')">0</li> 
+        </ul>  
+    </div>
+    <h1><span id="pswd"></span></h1>
+
+    <script type="text/javascript">
+        var codeEnter = "";
+        var confirmPassword = "1111";
+        function enterCode(character) {
+            codeEnter += character;
+            if (codeEnter.length == 4) {
+                if (codeEnter == confirmPassword) {
+                    window.location="welcomeMessage.html";
+                } else {
+                    codeEnter = "";
+                }
+            }
+            document.getElementById("pswd").innerHTML = codeEnter;
+        }
+    </script>
+</body>
+</html>

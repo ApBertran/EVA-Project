@@ -6,7 +6,7 @@ const createWindow = () => {
     fullscreen: true,
   })
 
-  mainWindow.loadFile('gui.html')
+  mainWindow.loadFile('entry.html')
 }
 
 app.whenReady().then(() => {
@@ -37,7 +37,7 @@ SecondaryApp.get('/', (req, res) => {
  
   var dataToSend;
   // spawn new child process to call the python script
-  const python = spawn("python", ["lights_control.py","node.js","python"]); // change to led py file when ready
+  const python = spawn("python", ["light_test.py","node.js","python"]); // change to led py file when ready
   // collect data from script
   python.stdout.on('data', function (data) {
    console.log('Pipe data from python script ...');

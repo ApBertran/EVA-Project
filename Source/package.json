@@ -12,6 +12,7 @@
     "electron": "^22.1.0"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security"
   }
 }
