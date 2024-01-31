@@ -6,7 +6,7 @@ const createWindow = () => {
     fullscreen: true,
   })
 
-  mainWindow.loadFile('entry.html')
+  mainWindow.loadFile('welcomeMessage.html')
 }
 
 app.whenReady().then(() => {
