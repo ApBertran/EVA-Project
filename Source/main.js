@@ -27,6 +27,7 @@ app.on('window-all-closed', () => {
 // New stuff
 const express = require('express')
 const {spawn} = require('child_process');
+const { argv } = require('process')
 const SecondaryApp = express()
 const port = 3000
 //
