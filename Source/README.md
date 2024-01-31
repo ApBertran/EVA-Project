@@ -16,6 +16,7 @@ electron@v22.1.0
 * npm install electron@v22.1.0
 * npm install express
 * pip install pyserial
+* sudo npm install pm2 -g
 
 ## Useful Links:
 * https://www.electronjs.org/docs/latest/tutorial/quick-start
