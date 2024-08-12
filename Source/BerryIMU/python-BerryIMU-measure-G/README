@@ -1,0 +1,26 @@
+This program demonstrates how to convert the raw values from an accelerometer to Gs
+
+http://ozzmaker.com/accelerometer-to-g/
+
+
+
+Both the BerryIMUv1 and BerryIMUv2 are supported
+
+BerryIMUv1 uses LSM9DS0 IMU
+BerryIMUv2 uses LSM9DS1 IMU
+BerryIMUv3 uses LS6MDSL and LIS3MDL 
+
+
+The BerryIMUv1, BerryIMUv2 and BerryIMUv3 are supported
+
+This script is python 2.7 and 3 compatible
+
+
+Python2;
+Run using;
+python berryIMU-measure-G.py
+
+
+Python3;
+Run using;
+python3 berryIMU-measure-G.py

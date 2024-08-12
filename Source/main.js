@@ -29,47 +29,51 @@ const { spawn } = require('child_process');
 const { constants } = require('original-fs')
 var gForceArray = [0, 0, 0]
 
-const pythonScriptPath = './BerryIMU/python-BerryIMU-measure-G/berryIMU-measure-G.py';
+function beginGForcePython() {
 
-// Spawn the python process
-const pythonProcess = spawn('python', [pythonScriptPath]);
+  const pythonScriptPath = './BerryIMU/python-BerryIMU-measure-G/berryIMU-measure-G.py';
 
-let buffer = '';
+  // Spawn the python process
+  const pythonProcess = spawn('python', [pythonScriptPath]);
 
-// Handle data from the python process
-pythonProcess.stdout.on('data', (data) => {
-  buffer += data.toString();
+  let buffer = '';
 
-  // Process the complete JSON data
-  let lines = buffer.split('\n');
-  buffer = lines.pop();
+  // Handle data from the python process
+  pythonProcess.stdout.on('data', (data) => {
+    buffer += data.toString();
 
-  lines.forEach(line => {
-    try {
-      const floatArray = JSON.parse(line.trim());
-      if (Array.isArray(floatArray) && floatArray.every(value => typeof value === 'number')) {
-        //console.log('Received float data: ', floatArray);
-        //gForceArray = floatArray
-        GForce(floatArray);
+    // Process the complete JSON data
+    let lines = buffer.split('\n');
+    buffer = lines.pop();
+
+    lines.forEach(line => {
+      try {
+        const floatArray = JSON.parse(line.trim());
+        if (Array.isArray(floatArray) && floatArray.every(value => typeof value === 'number')) {
+          //console.log('Received float data: ', floatArray);
+          gForceArray = floatArray
+          //GForce(floatArray);
+        }
+      } catch (e) {
+        console.error('Error parsing JSON data: ', e);
       }
-    } catch (e) {
-      console.error('Error parsing JSON data: ', e);
-    }
+    });
   });
-});
 
-// Handle any errors
-pythonProcess.stderr.on('data', (data) => {
-  console.error('Error from Python script: ', data.toString());
-});
+  // Handle any errors
+  pythonProcess.stderr.on('data', (data) => {
+    console.error('Error from Python script: ', data.toString());
+  });
 
-// Handle process exit
-pythonProcess.on('close', (code) => {
-  console.log('Python script exited with code ${code}');
-});
+  // Handle process exit
+  pythonProcess.on('close', (code) => {
+    console.log('Python script exited with code ${code}');
+  });
 
+  setTimeout(beginGForceOutput, 1000)
+}
 
-function GForce(gForceArray) {
+function GForce() {
   const xElement = document.getElementById('x-display');
   const yElement = document.getElementById('y-display');
   const zElement = document.getElementById('z-display');
@@ -79,8 +83,8 @@ function GForce(gForceArray) {
   zElement.textContent = '${gForceArray[2].toFixed(2)}';
 }
 
-// function beginGForceOutput() {
-//   setInterval(GForce, 200);
-// }
+function beginGForceOutput() {
+  setInterval(GForce, 200);
+}
 
-// setTimeout(GForce, 10000);
+setTimeout(beginGForcePython, 10000);
