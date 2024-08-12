@@ -11,7 +11,8 @@ const server = http.createServer(expressApp);
 const io = socketIO(server);
 
 // Serve static files from the 'Source' directory
-expressApp.use(express.static(path.join(__dirname, 'Source')));
+const sourceDir = __dirname; // Since main.js is in 'Source'
+expressApp.use(express.static(sourceDir));
 
 // Handle Socket.IO connections
 io.on('connection', (socket) => {
@@ -24,7 +25,7 @@ io.on('connection', (socket) => {
 });
 
 // Python script path and process setup
-const pythonScriptPath = path.join(__dirname, 'Source', 'berryIMU-measure-G.py');
+const pythonScriptPath = path.join(sourceDir, 'berryIMU-measure-G.py');
 const pythonProcess = spawn('python', [pythonScriptPath]);
 
 let buffer = '';
@@ -62,7 +63,7 @@ const createWindow = () => {
     fullscreen: true,
   });
 
-  mainWindow.loadFile('Source/welcomeMessage.html');
+  mainWindow.loadFile(path.join(sourceDir, 'welcomeMessage.html'));
 };
 
 app.whenReady().then(() => {
