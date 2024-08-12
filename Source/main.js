@@ -25,7 +25,7 @@ io.on('connection', (socket) => {
 });
 
 // Python script path and process setup
-const pythonScriptPath = path.join(sourceDir, 'berryIMU-measure-G.py');
+const pythonScriptPath = path.join(sourceDir, 'BerryIMU/python-BerryIMU-measure-G/berryIMU-measure-G.py');
 const pythonProcess = spawn('python', [pythonScriptPath]);
 
 let buffer = '';
