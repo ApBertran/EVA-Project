@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="styleGUI.css"> <!-- CSS Style Sheet -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
-  <body onload="openTab(event, 'Maps')">
+  <body onload="openTab(event, 'Maps')" onload="GForce()">
 
     <div class="sidenav">
       <button class="tablinks" onclick="openTab(event, 'Maps')"><img src="../Images/Maps.png" style="width:130%;height:130%;margin-left:-13%;"></button>
@@ -41,6 +41,9 @@
 
     <div id="Track" class="tabcontent">
       <h2>testing for track</h2>
+      <div id="x-display">Loading...</div>
+      <div id="y-display">Loading...</div>
+      <div id="z-display">Loading...</div>
     </div>
 
     <script type="text/javascript" src="navMenu.js"></script> <!-- move between pages of the nav menu -->
@@ -50,6 +53,8 @@
     <script type="text/javascript" src="mapConfig.js"></script> <!-- google maps config -->
 
     <script type="text/javascript" src="sliders.js"></script> <!-- script for sliders -->
+
+    <script src="main.js" defer></script> <!-- processes g-force for track mode -->
 
   </body>
 </html> 

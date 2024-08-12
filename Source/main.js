@@ -24,34 +24,63 @@ app.on('window-all-closed', () => {
 })
 
 
-// New stuff
-const express = require('express')
-const {spawn} = require('child_process');
-const { argv } = require('process')
-const SecondaryApp = express()
-const port = 3000
-//
+// New Stuff (8/11/2024)
+const { spawn } = require('child_process');
+const { constants } = require('original-fs')
+var gForceArray = [0, 0, 0]
+
+const pythonScriptPath = './BerryIMU/python-BerryIMU-measure-G/berryIMU-measure-G.py';
+
+// Spawn the python process
+const pythonProcess = spawn('python', [pythonScriptPath]);
+
+let buffer = '';
+
+// Handle data from the python process
+pythonProcess.stdout.on('data', (data) => {
+  buffer += data.toString();
+
+  // Process the complete JSON data
+  let lines = buffer.split('\n');
+  buffer = lines.pop();
+
+  lines.forEach(line => {
+    try {
+      const floatArray = JSON.parse(line.trim());
+      if (Array.isArray(floatArray) && floatArray.every(value => typeof value === 'number')) {
+        //console.log('Received float data: ', floatArray);
+        //gForceArray = floatArray
+        GForce(floatArray);
+      }
+    } catch (e) {
+      console.error('Error parsing JSON data: ', e);
+    }
+  });
+});
+
+// Handle any errors
+pythonProcess.stderr.on('data', (data) => {
+  console.error('Error from Python script: ', data.toString());
+});
+
+// Handle process exit
+pythonProcess.on('close', (code) => {
+  console.log('Python script exited with code ${code}');
+});
 
 
-// New Stuff
-SecondaryApp.get('/', (req, res) => {
- 
-  var dataToSend;
-  // spawn new child process to call the python script
-  const python = spawn("python", ["light_test.py","node.js","python"]); // change to led py file when ready
-  // collect data from script
-  python.stdout.on('data', function (data) {
-   console.log('Pipe data from python script ...');
-   dataToSend = data.toString();
-  });
-  // in close event we are sure that stream from child process is closed
-  python.on('close', (code) => {
-  console.log(`child process close all stdio with code ${code}`);
-  // send data to browser
-  res.send(dataToSend)
-  });
-  
- })
- SecondaryApp.listen(port, () => console.log(`Example app listening on port 
- ${port}!`))
-//
+function GForce(gForceArray) {
+  const xElement = document.getElementById('x-display');
+  const yElement = document.getElementById('y-display');
+  const zElement = document.getElementById('z-display');
+
+  xElement.textContent = '${gForceArray[0].toFixed(2)}';
+  yElement.textContent = '${gForceArray[1].toFixed(2)}';
+  zElement.textContent = '${gForceArray[2].toFixed(2)}';
+}
+
+// function beginGForceOutput() {
+//   setInterval(GForce, 200);
+// }
+
+// setTimeout(GForce, 10000);
