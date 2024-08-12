@@ -1,9 +1,9 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
-const { spawn } = require('child_process');
 const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
+const { spawn } = require('child_process');
 
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -68,7 +68,7 @@ const expressApp = express();
 const server = http.createServer(expressApp);
 const io = socketIO(server);
 
-expressApp.use(express.static(path.join(__dirname, 'public')));
+expressApp.use(express.static(path.join(__dirname, 'Source')));
 
 server.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');
