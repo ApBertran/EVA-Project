@@ -11,12 +11,12 @@ socket.on('gforce-update', (gForceArray) => {
   const gForceText = document.getElementById('g-force-text');
 
   // Scale factor for maximum g-force (3Gs)
-  const maxG = 3;
+  const maxG = 1.5;
 
   // Update needle rotations and lengths based on g-force
-  needleX.style.transform = `translateX(-50%) translateY(-50%) rotate(${gForceArray[0] / maxG * 90}deg)`;
-  needleY.style.transform = `translateX(-50%) translateY(-50%) rotate(${gForceArray[1] / maxG * 90}deg)`;
-  needleZ.style.transform = `translateX(-50%) translateY(-50%) rotate(${gForceArray[2] / maxG * 90}deg)`;
+  needleX.style.transform = `rotate(${gForceArray[0] / maxG * 90}deg)`;
+  needleY.style.transform = `rotate(${gForceArray[1] / maxG * 90}deg)`;
+  needleZ.style.transform = `rotate(${gForceArray[2] / maxG * 90}deg)`;
 
   // Adjust needle lengths based on g-force magnitude (limit to maxG)
   needleX.style.height = `${Math.min(Math.abs(gForceArray[0] / maxG), 1) * 50}%`;
