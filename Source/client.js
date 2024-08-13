@@ -5,33 +5,27 @@ socket.on('connect', () => {
 });
 
 socket.on('gforce-update', (gForceArray) => {
-  const needleX = document.getElementById('needle-x');
-  const needleY = document.getElementById('needle-y');
-  const needleZ = document.getElementById('needle-z');
+  const barX = document.getElementById('bar-x');
+  const barY = document.getElementById('bar-y');
   const gForceText = document.getElementById('g-force-text');
 
-  // Scale factor for maximum g-force (3Gs)
+  // Scale factor for maximum g-force (1.5Gs)
   const maxG = 1.5;
 
-  // Calculate needle lengths based on g-force magnitude (limit to maxG)
-  const lengthX = `${Math.min(Math.abs(gForceArray[0] / maxG), 1) * 50}%`;
-  const lengthY = `${Math.min(Math.abs(gForceArray[1] / maxG), 1) * 50}%`;
-  const lengthZ = `${Math.min(Math.abs(gForceArray[2] / maxG), 1) * 50}%`;
+  // Update horizontal bar (x-axis, pitch)
+  const xOffset = (gForceArray[0] / maxG) * 50;  // Percentage offset from center
+  barX.style.width = `${Math.abs(xOffset)}%`;
+  barX.style.transform = `translateX(${xOffset}%)`;
 
-  // Update needle lengths
-  needleX.style.height = lengthX;
-  needleY.style.height = lengthY;
-  needleZ.style.height = lengthZ;
-
-  // Update needle rotations (keep them centered)
-  needleX.style.transform = `translateX(-50%) translateY(-100%) rotate(${gForceArray[0] / maxG * 90}deg)`;
-  needleY.style.transform = `translateX(-50%) translateY(-100%) rotate(${gForceArray[1] / maxG * 90}deg)`;
-  needleZ.style.transform = `translateX(-50%) translateY(-100%) rotate(${gForceArray[2] / maxG * 90}deg)`;
+  // Update vertical bar (y-axis, lateral acceleration)
+  const yOffset = (gForceArray[1] / maxG) * 50;  // Percentage offset from center
+  barY.style.height = `${Math.abs(yOffset)}%`;
+  barY.style.transform = `translateY(${-yOffset}%)`;
 
   // Calculate total g-force and display it
-  const totalGForce = Math.sqrt(gForceArray[0] ** 2 + gForceArray[1] ** 2 + gForceArray[2] ** 2).toFixed(2);
+  const totalGForce = Math.sqrt(gForceArray[0] ** 2 + gForceArray[1] ** 2).toFixed(2);
   gForceText.innerText = `${totalGForce} G`;
-
+}
   // console.log('Received data:', gForceArray);
   // const xElement = document.getElementById('x-display');
   // const yElement = document.getElementById('y-display');
