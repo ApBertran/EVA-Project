@@ -22,7 +22,19 @@ socket.on('gforce-update', (gForceArray) => {
   needleX.style.height = `${Math.min(Math.abs(gForceArray[0] / maxG), 1) * 50}%`;
   needleY.style.height = `${Math.min(Math.abs(gForceArray[1] / maxG), 1) * 50}%`;
   needleZ.style.height = `${Math.min(Math.abs(gForceArray[2] / maxG), 1) * 50}%`;
+
+  // Reset the needles' positions to keep them centered
+  needleX.style.top = '50%';
+  needleX.style.left = '50%';
+  needleX.style.transformOrigin = 'bottom center';
   
+  needleY.style.top = '50%';
+  needleY.style.left = '50%';
+  needleY.style.transformOrigin = 'bottom center';
+  
+  needleZ.style.top = '50%';
+  needleZ.style.left = '50%';
+  needleZ.style.transformOrigin = 'bottom center';
 
   // Calculate total g-force and display it
   const totalGForce = Math.sqrt(gForceArray[0] ** 2 + gForceArray[1] ** 2 + gForceArray[2] ** 2).toFixed(2);
