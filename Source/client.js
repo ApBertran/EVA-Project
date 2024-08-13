@@ -53,6 +53,19 @@ socket.on('gforce-update', (gForceArray) => {
       }, peak.disappearAfter);
     }, peak.showAfter);
   }
+
+// Handle maxG slider change
+document.getElementById('maxG-slider').addEventListener('input', (event) => {
+  maxG = parseFloat(event.target.value);
+  document.getElementById('maxG-value').innerText = maxG.toFixed(1);
+});
+
+// Handle disappearAfter slider change
+document.getElementById('disappearAfter-slider').addEventListener('input', (event) => {
+  peak.disappearAfter = parseFloat(event.target.value) * 1000;  // Convert to milliseconds
+  document.getElementById('disappearAfter-value').innerText = parseFloat(event.target.value).toFixed(1);
+});
+  
   // console.log('Received data:', gForceArray);
   // const xElement = document.getElementById('x-display');
   // const yElement = document.getElementById('y-display');
