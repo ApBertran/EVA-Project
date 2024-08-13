@@ -21,7 +21,7 @@ socket.on('gforce-update', (gForceArray) => {
   // Display the total g-force
   const totalGForce = (magnitude * maxG).toFixed(2);
   gForceText.innerText = `${totalGForce} G`;
-}
+
   // console.log('Received data:', gForceArray);
   // const xElement = document.getElementById('x-display');
   // const yElement = document.getElementById('y-display');
