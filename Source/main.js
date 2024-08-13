@@ -40,7 +40,6 @@ pythonProcess.stdout.on('data', (data) => {
     try {
       const floatArray = JSON.parse(line.trim());
       if (Array.isArray(floatArray) && floatArray.every(value => typeof value === 'number')) {
-        console.log('Emitting data:', floatArray);
         io.emit('gforce-update', floatArray); // Emit data to clients
       }
     } catch (e) {

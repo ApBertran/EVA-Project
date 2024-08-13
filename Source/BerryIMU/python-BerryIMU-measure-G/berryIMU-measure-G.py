@@ -43,4 +43,4 @@ while True:
     sys.stdout.flush()
 
     #Slow program down a bit, makes the output more readable
-    time.sleep(0.1)
+    time.sleep(0.05)
