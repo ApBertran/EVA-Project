@@ -128,16 +128,24 @@ body {
     border: 2px solid #fff;
 }
 
-.vector {
+.vector, .peak-vector {
     position: absolute;
     width: 4px;
     height: 50%;
-    background-color: #ff0000;
     top: 50%;
     left: 50%;
     transform-origin: bottom center;
     border-radius: 2px;
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+}
+
+.vector {
+    background-color: #ff0000;
+}
+
+.peak-vector {
+    background-color: rgba(0, 0, 255, 0.5);  /* Slightly transparent blue */
+    display: none;  /* Initially hidden */
 }
 
 .center-dot {
@@ -149,15 +157,6 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-}
-
-.peak-dot {
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    background-color: #fff;
-    border-radius: 50%;
-    display: none; /* Initially hidden */
 }
 
 #g-force-text, #peak-text {
