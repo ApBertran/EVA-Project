@@ -114,6 +114,7 @@ body {
 }
 
 .gauge-container {
+    perspective: 1000px;
     position: relative;
     width: 300px;
     height: 300px;
@@ -126,16 +127,31 @@ body {
     border: 5px solid #fff;
     position: relative;
     background: radial-gradient(circle, #333, #111);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    transform: rotateX(20deg);
 }
 
 .needle {
     position: absolute;
-    width: 2px;
+    width: 4px;
     height: 50%;
     background-color: #ff0000;
     top: 50%;
     left: 50%;
     transform-origin: bottom center;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+    transform: translateX(-50%) translateY(-50%) rotateX(20deg);
+    border-radius: 2px;
+}
+
+#needle-y {
+    background-color: #00ff00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+}
+
+#needle-z {
+    background-color: #0000ff;
+    box-shadow: 0 0 10px rgba(0, 0, 255, 0.7);
 }
 
 #g-force-text {
@@ -145,16 +161,8 @@ body {
     bottom: 10px;
     color: #fff;
     font-size: 24px;
+    transform: rotateX(20deg);
 }
-
-#needle-y {
-    background-color: #00ff00;
-}
-
-#needle-z {
-    background-color: #0000ff;
-}
-
 
 /*
 @media screen and (max-height: 450px) {
