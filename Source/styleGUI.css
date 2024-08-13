@@ -140,10 +140,30 @@ body {
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
 }
 
-#g-force-text {
+.center-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: #fff;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.peak-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: none; /* Initially hidden */
+}
+
+#g-force-text, #peak-text {
     color: #fff;
-    font-size: 24px;
-    margin-top: 20px;
+    font-size: 18px;
+    margin-top: 10px;
 }
 
 /*
