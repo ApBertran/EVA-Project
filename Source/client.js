@@ -1,4 +1,4 @@
-// Peak magnitude of g-force
+  // Peak magnitude of g-force
 let peak = {
     magnitude: 0,
     angle: 0,
@@ -6,6 +6,9 @@ let peak = {
     showAfter: 1500,  // 1.5 seconds to confirm peak
     disappearAfter: 5000  // 5 seconds to hide peak
 };
+
+  // Default max g-value
+let maxG = 1.5;
 
 const socket = io.connect('http://localhost:3000');
 
@@ -18,9 +21,6 @@ socket.on('gforce-update', (gForceArray) => {
   const gForceText = document.getElementById('g-force-text');
   const peakVector = document.getElementById('peak-vector');
   const peakText = document.getElementById('peak-text');
-
-  // Scale factor for maximum g-force (1.5Gs)
-  const maxG = 1.5;
 
   // Calculate the angle and magnitude of the vector
   const angle = Math.atan2(gForceArray[1], gForceArray[0]) * (180 / Math.PI);  // Angle in degrees
@@ -48,11 +48,12 @@ socket.on('gforce-update', (gForceArray) => {
       // Set a timer to hide the peak vector after 5 seconds
       setTimeout(() => {
         peakVector.style.display = 'none';
-        peakText.innerText = '';
+        // peakText.innerText = 'Peak: 0.00G';
         peak.magnitude = 0;  // Reset peak magnitude
       }, peak.disappearAfter);
     }, peak.showAfter);
   }
+});
 
 // Handle maxG slider change
 document.getElementById('maxG-slider').addEventListener('input', (event) => {
@@ -64,14 +65,4 @@ document.getElementById('maxG-slider').addEventListener('input', (event) => {
 document.getElementById('disappearAfter-slider').addEventListener('input', (event) => {
   peak.disappearAfter = parseFloat(event.target.value) * 1000;  // Convert to milliseconds
   document.getElementById('disappearAfter-value').innerText = parseFloat(event.target.value).toFixed(1);
-});
-  
-  // console.log('Received data:', gForceArray);
-  // const xElement = document.getElementById('x-display');
-  // const yElement = document.getElementById('y-display');
-  // const zElement = document.getElementById('z-display');
-
-  // xElement.textContent = gForceArray[0].toFixed(2);
-  // yElement.textContent = gForceArray[1].toFixed(2);
-  // zElement.textContent = gForceArray[2].toFixed(2);
 });

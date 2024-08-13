@@ -121,8 +121,8 @@ body {
 
 .gauge {
     position: relative;
-    width: 300px;
-    height: 300px;
+    width: 500px;
+    height: 500px;
     border-radius: 50%;
     background-color: #333;
     border: 2px solid #fff;
@@ -171,6 +171,7 @@ body {
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
+    width: 80%;
 }
 
 .slider-container label {
@@ -179,7 +180,7 @@ body {
 }
 
 .slider-container input[type="range"] {
-    width: 200px;
+    width: 100%;
     margin-bottom: 20px;
 }
 
