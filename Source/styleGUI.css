@@ -126,6 +126,7 @@ body {
     border-radius: 50%;
     background-color: #333;
     border: 2px solid #fff;
+    margin-bottom: 20px;
 }
 
 .vector, .peak-vector {
@@ -144,7 +145,7 @@ body {
 }
 
 .peak-vector {
-    background-color: rgba(0, 0, 255, 0.5);  /* Slightly transparent blue */
+    background-color: rgba(44, 62, 80, 0.7);  /* Dark bluish-gray */
     display: none;  /* Initially hidden */
 }
 
@@ -163,6 +164,23 @@ body {
     color: #fff;
     font-size: 18px;
     margin-top: 10px;
+}
+
+.slider-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.slider-container label {
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.slider-container input[type="range"] {
+    width: 200px;
+    margin-bottom: 20px;
 }
 
 /*
