@@ -6,7 +6,7 @@ let peak = {
     showAfter: 1500,  // 1.5 seconds to confirm peak
     disappearAfter: 5000  // 5 seconds to hide peak
 };
-https://github.com/ApBertran/EVA-Project/blob/alternate-g-force-gauge/Source/client.js
+
 const socket = io.connect('http://localhost:3000');
 
 socket.on('connect', () => {
