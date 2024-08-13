@@ -42,10 +42,19 @@
     <div id="Track" class="tabcontent">
       <div class="gauge-container">
         <div class="gauge">
-            <div class="needle" id="needle-x"></div>
-            <div class="needle" id="needle-y"></div>
-            <div class="needle" id="needle-z"></div>
-            <div class="g-force-text" id="g-force-text">0.0 G</div>
+          <div class="center-dot"></div>
+          <div class="vector" id="vector"></div>
+          <div class="peak-vector" id="peak-vector"></div>
+        </div>
+        <div id="g-force-text"></div>
+        <div id="peak-text">Peak: 0.00G</div>
+
+        <div class="slider-container">
+          <label for="maxG-slider">Max G-Force: <span id="maxG-value">1.5</span> G</label>
+          <input type="range" id="maxG-slider" class="slider" min="0.5" max="5" value="1.5" step="0.1">
+
+          <label for="disappearAfter-slider">Peak Display Time: <span id="disappearAfter-value">5</span> seconds</label>
+          <input type="range" id="disappearAfter-slider" class="slider" min="1" max="10" value="5" step="0.5">
         </div>
       </div>
     </div>
