@@ -13,28 +13,20 @@ socket.on('gforce-update', (gForceArray) => {
   // Scale factor for maximum g-force (3Gs)
   const maxG = 1.5;
 
-  // Update needle rotations and lengths based on g-force
-  needleX.style.transform = `rotate(${gForceArray[0] / maxG * 90}deg)`;
-  needleY.style.transform = `rotate(${gForceArray[1] / maxG * 90}deg)`;
-  needleZ.style.transform = `rotate(${gForceArray[2] / maxG * 90}deg)`;
+  // Calculate needle lengths based on g-force magnitude (limit to maxG)
+  const lengthX = `${Math.min(Math.abs(gForceArray[0] / maxG), 1) * 50}%`;
+  const lengthY = `${Math.min(Math.abs(gForceArray[1] / maxG), 1) * 50}%`;
+  const lengthZ = `${Math.min(Math.abs(gForceArray[2] / maxG), 1) * 50}%`;
 
-  // Adjust needle lengths based on g-force magnitude (limit to maxG)
-  needleX.style.height = `${Math.min(Math.abs(gForceArray[0] / maxG), 1) * 50}%`;
-  needleY.style.height = `${Math.min(Math.abs(gForceArray[1] / maxG), 1) * 50}%`;
-  needleZ.style.height = `${Math.min(Math.abs(gForceArray[2] / maxG), 1) * 50}%`;
+  // Update needle lengths
+  needleX.style.height = lengthX;
+  needleY.style.height = lengthY;
+  needleZ.style.height = lengthZ;
 
-  // Reset the needles' positions to keep them centered
-  needleX.style.top = '50%';
-  needleX.style.left = '50%';
-  needleX.style.transformOrigin = 'bottom center';
-  
-  needleY.style.top = '50%';
-  needleY.style.left = '50%';
-  needleY.style.transformOrigin = 'bottom center';
-  
-  needleZ.style.top = '50%';
-  needleZ.style.left = '50%';
-  needleZ.style.transformOrigin = 'bottom center';
+  // Update needle rotations (keep them centered)
+  needleX.style.transform = `translateX(-50%) translateY(-100%) rotate(${gForceArray[0] / maxG * 90}deg)`;
+  needleY.style.transform = `translateX(-50%) translateY(-100%) rotate(${gForceArray[1] / maxG * 90}deg)`;
+  needleZ.style.transform = `translateX(-50%) translateY(-100%) rotate(${gForceArray[2] / maxG * 90}deg)`;
 
   // Calculate total g-force and display it
   const totalGForce = Math.sqrt(gForceArray[0] ** 2 + gForceArray[1] ** 2 + gForceArray[2] ** 2).toFixed(2);
