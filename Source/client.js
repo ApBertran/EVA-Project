@@ -5,25 +5,21 @@ socket.on('connect', () => {
 });
 
 socket.on('gforce-update', (gForceArray) => {
-  const barX = document.getElementById('bar-x');
-  const barY = document.getElementById('bar-y');
+  const vector = document.getElementById('vector');
   const gForceText = document.getElementById('g-force-text');
 
   // Scale factor for maximum g-force (1.5Gs)
   const maxG = 1.5;
 
-  // Update horizontal bar (x-axis, pitch)
-  const xOffset = (gForceArray[0] / maxG) * 50;  // Percentage offset from center
-  barX.style.width = `${Math.abs(xOffset)}%`;
-  barX.style.transform = `translateX(${xOffset}%)`;
+  // Calculate the angle and magnitude of the vector
+  const angle = Math.atan2(gForceArray[0], gForceArray[1]) * (180 / Math.PI);  // Angle in degrees
+  const magnitude = Math.min(Math.sqrt(gForceArray[1] ** 2 + gForceArray[0] ** 2) / maxG, 1);  // Normalize to maxG
 
-  // Update vertical bar (y-axis, lateral acceleration)
-  const yOffset = (gForceArray[1] / maxG) * 50;  // Percentage offset from center
-  barY.style.height = `${Math.abs(yOffset)}%`;
-  barY.style.transform = `translateY(${-yOffset}%)`;
+  // Update vector rotation and length
+  vector.style.transform = `translateX(-50%) translateY(-100%) rotate(${angle}deg) scaleY(${magnitude})`;
 
-  // Calculate total g-force and display it
-  const totalGForce = Math.sqrt(gForceArray[0] ** 2 + gForceArray[1] ** 2).toFixed(2);
+  // Display the total g-force
+  const totalGForce = (magnitude * maxG).toFixed(2);
   gForceText.innerText = `${totalGForce} G`;
 }
   // console.log('Received data:', gForceArray);
