@@ -2,75 +2,159 @@
 
 <html>
   <head>
-    <link rel="stylesheet" href="styleGUI.css"> <!-- CSS Style Sheet -->
+    <link rel="stylesheet" href="styleGUI.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
-  <body onload="openTab(event, 'Maps')">
+  <body onload="initTabs()">
 
     <div class="sidenav">
-      <button class="tablinks" onclick="openTab(event, 'Maps')"><img src="../Images/Maps.png" style="width:130%;height:130%;margin-left:-13%;"></button>
-      <button class="tablinks" onclick="openTab(event, 'Lights')"><img src="../Images/LED.png" style="width:130%;height:130%;margin-left:-13%;"></button>
-      <button class="tablinks" onclick="openTab(event, 'Video')"><img src="../Images/Video.png" style="width:130%;height:130%;margin-left:-13%;"></button>
-      <button class="tablinks" onclick="openTab(event, 'Logs')"><img src="../Images/Logs.png" style="width:130%;height:130%;margin-left:-13%;"></button>
-      <button class="tablinks" onclick="openTab(event, 'Track')"><img src="../Images/Performance.png" style="width:130%;height:130%;margin-left:-13%;"></button>
+      <button class="tablinks" onclick="openTab(event, 'Maps')">
+        <svg viewBox="0 0 24 24"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg>
+        Maps
+      </button>
+      <button class="tablinks" onclick="openTab(event, 'Lights')">
+        <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.5.4.8 1 .8 1.6v.5h5.4v-.5c0-.6.3-1.2.8-1.6A6 6 0 0 0 12 3z"/></svg>
+        Lights
+      </button>
+      <button class="tablinks" onclick="openTab(event, 'Video')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 11 6-3.5v9L15 13z"/></svg>
+        Video
+      </button>
+      <button class="tablinks" onclick="openTab(event, 'Logs')">
+        <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+        Logs
+      </button>
+      <button class="tablinks" onclick="openTab(event, 'Track')">
+        <svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 1 1 16 0"/><path d="m12 14 4-4"/><circle cx="12" cy="18" r="1.4"/></svg>
+        Track
+      </button>
+    </div>
+
+    <div class="statusbar">
+      <div class="brand">EVA</div>
+      <div class="right">
+        <div class="pill">GPS</div>
+        <div class="pill off">OBD</div>
+        <div id="clock">--:--</div>
+        <button class="gear" id="gear-btn" onclick="openSettings()" aria-label="Settings">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
     </div>
 
     <div id="Maps" class="tabcontent">
-      <div id="googleMap" class="mapdirections"></div>
+      <div id="googleMap" class="mapdirections">
+        <div class="empty">
+          <svg viewBox="0 0 24 24"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg>
+          <span>No map source</span>
+        </div>
+      </div>
     </div>
 
     <div id="Lights" class="tabcontent">
-      <iframe class="colorbox"></iframe>
-      <div class="slidecontainer">
-        <input type="range" min="0" max="255" value="0" class="slider" id="redRange">
-        <input type="range" min="0" max="255" value="0" class="slider" id="greenRange">
-        <input type="range" min="0" max="255" value="0" class="slider" id="blueRange">
-        <p hidden><span id="redVal"></span></p>
-        <p hidden><span id="greenVal"></span></p>
-        <p hidden><span id="blueVal"></span></p>
+      <div class="panel-title">Interior Lighting</div>
+      <div class="lights-layout">
+        <div class="colorbox"></div>
+        <div class="slidecontainer">
+          <div class="channel">
+            <div class="channel-head">Red <b><span id="redVal"></span></b></div>
+            <input type="range" min="0" max="255" value="0" class="slider" id="redRange">
+          </div>
+          <div class="channel">
+            <div class="channel-head">Green <b><span id="greenVal"></span></b></div>
+            <input type="range" min="0" max="255" value="0" class="slider" id="greenRange">
+          </div>
+          <div class="channel">
+            <div class="channel-head">Blue <b><span id="blueVal"></span></b></div>
+            <input type="range" min="0" max="255" value="0" class="slider" id="blueRange">
+          </div>
+        </div>
       </div>
     </div>
 
     <div id="Video" class="tabcontent">
-      <h2> testing for video</h2>
+      <div class="panel-title">Camera</div>
+      <div class="empty">
+        <svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 11 6-3.5v9L15 13z"/></svg>
+        <span>No camera connected</span>
+      </div>
     </div>
 
     <div id="Logs" class="tabcontent">
-      <h2> testing for logs</h2>
+      <div class="panel-title">Logs &amp; Maintenance</div>
+      <div class="empty">
+        <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+        <span>No entries</span>
+      </div>
     </div>
 
-    <div id="Track" class="tabcontent">
-      <div class="gauge-container">
-        <div class="gauge">
-          <div class="center-dot"></div>
-          <div class="vector" id="vector"></div>
-          <div class="peak-vector" id="peak-vector"></div>
+    <div id="Track" class="tabcontent track-tab">
+      <div class="gauge">
+        <div class="crosshair"></div>
+        <div class="axis-label top">Brake</div>
+        <div class="axis-label bottom">Throttle</div>
+        <div class="axis-label left">Turn R</div>
+        <div class="axis-label right">Turn L</div>
+        <div class="vector" id="vector"></div>
+        <div class="peak-vector" id="peak-vector"></div>
+        <div class="center-dot"></div>
+      </div>
+
+      <div class="readout corner-left">
+        <div class="label">Current</div>
+        <div id="g-force-text">0.00 G</div>
+      </div>
+      <div class="readout corner-right">
+        <div class="label">Peak</div>
+        <div id="peak-text">0.00 G</div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="settings-overlay">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2>Settings</h2>
+          <button class="close-btn" onclick="closeSettings()" aria-label="Close">&times;</button>
         </div>
-        <div id="g-force-text"></div>
-        <div id="peak-text">Peak: 0.00G</div>
 
-        <div class="slider-container">
-          <label for="maxG-slider">Max G-Force: <span id="maxG-value">1.5</span> G</label>
-          <input type="range" id="maxG-slider" class="slider" min="0.5" max="5" value="1.5" step="0.1">
+        <div class="settings-section">
+          <div class="section-title">Performance Gauge</div>
+          <div class="setting-row">
+            <label for="maxG-slider">Max G-Force <span id="maxG-value">1.5</span></label>
+            <input type="range" id="maxG-slider" class="slider" min="0.5" max="5" value="1.5" step="0.1">
+          </div>
+          <div class="setting-row">
+            <label for="disappearAfter-slider">Peak Hold <span id="disappearAfter-value">5</span></label>
+            <input type="range" id="disappearAfter-slider" class="slider" min="1" max="10" value="5" step="0.5">
+          </div>
+        </div>
 
-          <label for="disappearAfter-slider">Peak Display Time: <span id="disappearAfter-value">5</span> seconds</label>
-          <input type="range" id="disappearAfter-slider" class="slider" min="1" max="10" value="5" step="0.5">
+        <div class="settings-section">
+          <div class="section-title">Suspension <span class="badge">Servos not connected</span></div>
+          <div class="setting-row">
+            <label for="damping-slider">Damping <span id="damping-value">16</span></label>
+            <input type="range" id="damping-slider" class="slider" min="1" max="32" value="16" step="1">
+            <div class="scale-ends"><span>1 &middot; Soft</span><span>Firm &middot; 32</span></div>
+          </div>
         </div>
       </div>
     </div>
-    
-      
-    <script type="text/javascript" src="navMenu.js"></script> <!-- move between pages of the nav menu -->
 
-    <script type="text/javascript" src="mapInit.js"></script> <!-- initialize the map and display it -->
+    <script type="text/javascript" src="navMenu.js"></script>
 
-    <script type="text/javascript" src="mapConfig.js"></script> <!-- google maps config -->
+    <script type="text/javascript" src="mapInit.js"></script>
 
-    <script type="text/javascript" src="sliders.js"></script> <!-- script for sliders -->
+    <script type="text/javascript" src="mapConfig.js"></script>
+
+    <script type="text/javascript" src="sliders.js"></script>
 
     <script src="socket.io.js"></script>
-    
+
     <script type="text/javascript" src="client.js"></script>
 
+    <script type="text/javascript" src="clock.js"></script>
+
+    <script type="text/javascript" src="settings.js"></script>
+
   </body>
-</html> 
+</html>
