@@ -1502,8 +1502,64 @@ body.osk-open .settings-card {
   background: var(--bg);
 }
 
-.chart.tall { height: 9rem; }
-.chart.square { height: 17rem; }
+.chart.tall { height: 13rem; }
+/* the friction circle is sized by min(width, height), so height was the
+   limiting dimension and the plot rendered far smaller than the space allowed */
+.chart.square { height: 27rem; }
+.chart.wide { height: 16rem; }
+
+.ch-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+
+.ch-chip {
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--silver-dim);
+  font-family: inherit;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.ch-chip.on {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: rgba(63, 208, 176, 0.14);
+}
+
+:root[data-theme="day"] .ch-chip.on {
+  background: rgba(10, 110, 92, 0.16);
+}
+
+.ch-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+  margin-top: 0.6rem;
+}
+
+.ch-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.95rem;
+}
+
+.ch-swatch {
+  width: 0.9rem;
+  height: 0.25rem;
+  border-radius: 0.15rem;
+}
+
+.ch-name { color: var(--silver); }
+.ch-range { color: var(--silver-dim); }
 
 .chart-legend {
   display: flex;

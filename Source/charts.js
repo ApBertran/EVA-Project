@@ -38,7 +38,7 @@ function drawFrictionCircle(canvas, scatter, maxG) {
   const size = Math.min(w, h);
   const cx = w / 2;
   const cy = h / 2;
-  const radius = size / 2 - 18;
+  const radius = size / 2 - 34;
   const limit = Math.max(0.4, maxG);
 
   ctx.clearRect(0, 0, w, h);
@@ -58,10 +58,10 @@ function drawFrictionCircle(canvas, scatter, maxG) {
   ctx.stroke();
 
   ctx.fillStyle = CHART_COLORS.dim;
-  ctx.font = '11px system-ui, sans-serif';
+  ctx.font = '16px system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('BRAKE', cx, cy - radius - 6);
-  ctx.fillText('THROTTLE', cx, cy + radius + 14);
+  ctx.fillText('BRAKE', cx, cy - radius - 10);
+  ctx.fillText('THROTTLE', cx, cy + radius + 22);
   ctx.textAlign = 'right';
   ctx.fillText('RIGHT', cx - radius - 4, cy + 4);
   ctx.textAlign = 'left';
@@ -77,7 +77,7 @@ function drawFrictionCircle(canvas, scatter, maxG) {
     ctx.fillStyle = gColor(mag, limit);
     ctx.globalAlpha = 0.5;
     ctx.beginPath();
-    ctx.arc(x, y, 1.8, 0, Math.PI * 2);
+    ctx.arc(x, y, 2.4, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.globalAlpha = 1;
@@ -102,7 +102,7 @@ function drawTimeline(canvas, series) {
     ctx.lineTo(w, y);
     ctx.stroke();
     ctx.fillStyle = CHART_COLORS.dim;
-    ctx.font = '10px system-ui, sans-serif';
+    ctx.font = '15px system-ui, sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText(`${((peak * i) / 3).toFixed(1)}g`, 2, y - 3);
   }
@@ -143,7 +143,7 @@ function drawTrack(canvas, track) {
   ctx.clearRect(0, 0, w, h);
   if (track.length < 2) {
     ctx.fillStyle = CHART_COLORS.dim;
-    ctx.font = '12px system-ui, sans-serif';
+    ctx.font = '18px system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('No location data in this log', w / 2, h / 2);
     return;
@@ -195,9 +195,121 @@ function drawTrack(canvas, track) {
   ctx.fillStyle = grad;
   ctx.fillRect(pad, h - 16, 120, 6);
   ctx.fillStyle = CHART_COLORS.dim;
-  ctx.font = '10px system-ui, sans-serif';
+  ctx.font = '15px system-ui, sans-serif';
   ctx.textAlign = 'left';
   ctx.fillText('0g', pad, h - 20);
   ctx.textAlign = 'right';
   ctx.fillText(`${maxG.toFixed(2)}g`, pad + 120, h - 20);
+}
+
+/* Modular multi-channel plot.
+ *
+ * Each channel is scaled to its own min/max rather than a shared axis - rpm in
+ * the thousands and throttle in percent have no meaningful common scale, and
+ * forcing one flattens everything but the largest. Each trace therefore shows
+ * shape and correlation over time; the legend carries the real units.
+ */
+const OBD_CHANNELS = {
+  rpm:      { label: 'RPM',          unit: 'rpm',  color: () => CHART_COLORS.orange },
+  kph:      { label: 'Speed',        unit: 'km/h', color: () => CHART_COLORS.teal },
+  throttle: { label: 'Throttle',     unit: '%',    color: () => '#e8c547' },
+  load:     { label: 'Engine Load',  unit: '%',    color: () => '#9b8bd6' },
+  coolant:  { label: 'Coolant',      unit: '°C', color: () => '#e2725b' },
+  maf:      { label: 'MAF',          unit: 'g/s',  color: () => '#5aa9e6' },
+  timing:   { label: 'Timing',       unit: '°', color: () => '#7ec4a0' },
+  iat:      { label: 'Intake Air',   unit: '°C', color: () => '#c98bb9' },
+  lph:      { label: 'Fuel Rate',    unit: 'L/h',  color: () => '#d4915d' }
+};
+
+function drawChannels(canvas, timeline, keys) {
+  const { ctx, w, h } = setupCanvas(canvas);
+  ctx.clearRect(0, 0, w, h);
+  if (!timeline || !timeline.length || !keys.length) {
+    ctx.fillStyle = CHART_COLORS.dim;
+    ctx.font = '13px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Select a channel to plot', w / 2, h / 2);
+    return;
+  }
+
+  const padL = 8;
+  const padR = 8;
+  const padT = 10;
+  const padB = 22;
+  const plotW = w - padL - padR;
+  const plotH = h - padT - padB;
+
+  ctx.strokeStyle = CHART_COLORS.line;
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + (plotH * i) / 4;
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR, y);
+    ctx.stroke();
+  }
+
+  const t0 = timeline[0].t;
+  const tSpan = Math.max(1, timeline[timeline.length - 1].t - t0);
+
+  // elapsed-time ticks along the bottom
+  ctx.fillStyle = CHART_COLORS.dim;
+  ctx.font = '16px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= 4; i++) {
+    const secs = Math.round((tSpan / 1000) * (i / 4));
+    const x = padL + (plotW * i) / 4;
+    const mm = Math.floor(secs / 60);
+    const ss = String(secs % 60).padStart(2, '0');
+    ctx.fillText(`${mm}:${ss}`, x, h - 6);
+  }
+
+  for (const key of keys) {
+    const spec = OBD_CHANNELS[key];
+    if (!spec) continue;
+    const vals = timeline.map((p) => (typeof p[key] === 'number' ? p[key] : null));
+    const present = vals.filter((v) => v !== null);
+    if (!present.length) continue;
+
+    let lo = Math.min(...present);
+    let hi = Math.max(...present);
+    if (hi - lo < 1e-6) {
+      hi += 1;
+      lo -= 1;
+    }
+
+    ctx.beginPath();
+    let started = false;
+    vals.forEach((v, i) => {
+      if (v === null) return;
+      const x = padL + (plotW * (timeline[i].t - t0)) / tSpan;
+      const y = padT + plotH - ((v - lo) / (hi - lo)) * plotH;
+      if (!started) {
+        ctx.moveTo(x, y);
+        started = true;
+      } else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = spec.color();
+    ctx.lineWidth = 1.6;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  }
+}
+
+/* Legend lives in the DOM rather than the canvas so the ranges stay readable
+   and selectable at a glance on a moving car's screen. */
+function channelLegend(timeline, keys) {
+  return keys
+    .map((key) => {
+      const spec = OBD_CHANNELS[key];
+      if (!spec) return '';
+      const present = timeline.map((p) => p[key]).filter((v) => typeof v === 'number');
+      if (!present.length) return '';
+      const lo = Math.min(...present);
+      const hi = Math.max(...present);
+      return `<div class="ch-legend-item"><span class="ch-swatch" style="background:${spec.color()}"></span>
+        <span class="ch-name">${spec.label}</span>
+        <span class="ch-range">${lo.toFixed(0)}–${hi.toFixed(0)} ${spec.unit}</span></div>`;
+    })
+    .join('');
 }

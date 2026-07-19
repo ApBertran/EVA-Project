@@ -17,6 +17,10 @@ const SERIES_POINTS = 2000;
 const SCATTER_POINTS = 1500;
 const HIST_BUCKETS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.25, 1.5];
 
+/* half-window for the peak despike filter: 10 samples either side of centre
+   is ~200ms at the logger's 100Hz. */
+const DESPIKE_HALF = 10;
+
 function percentile(sorted, p) {
   if (!sorted.length) return 0;
   const idx = Math.min(sorted.length - 1, Math.max(0, Math.round((p / 100) * (sorted.length - 1))));
@@ -186,19 +190,43 @@ async function analyze(dir, axesConfig, options) {
 
   if (!samples.length && !fixes.length && !obdRows.length) return null;
 
-  const sortedLat = [...absLat].sort((a, b) => a - b);
-  const sortedLon = [...absLon].sort((a, b) => a - b);
-  const sortedC = [...combined].sort((a, b) => a - b);
+  /* Despike before deriving any peak. At 100Hz a single pothole hit registers
+     as one 10ms sample far above anything the tires actually did - a real log
+     reported 1.34g braking where the sustained figure was 0.60g. A rolling
+     median over ~200ms keeps genuine sustained loads intact while discarding
+     impacts, which are impulses rather than grip.
+     The raw samples are kept for the scatter plot and event detection. */
+  const despiked = samples.map((s) => ({ ...s }));
+  for (let i = 0; i < despiked.length; i++) {
+    const lo = Math.max(0, i - DESPIKE_HALF);
+    const hi = Math.min(despiked.length, i + DESPIKE_HALF + 1);
+    const wLat = [];
+    const wLon = [];
+    for (let j = lo; j < hi; j++) {
+      wLat.push(samples[j].lat);
+      wLon.push(samples[j].lon);
+    }
+    wLat.sort((a, b) => a - b);
+    wLon.sort((a, b) => a - b);
+    const mid = wLat.length >> 1;
+    despiked[i].lat = wLat[mid];
+    despiked[i].lon = wLon[mid];
+    despiked[i].c = Math.hypot(despiked[i].lat, despiked[i].lon);
+  }
+
+  const sortedLat = despiked.map((s) => Math.abs(s.lat)).sort((a, b) => a - b);
+  const sortedLon = despiked.map((s) => Math.abs(s.lon)).sort((a, b) => a - b);
+  const sortedC = despiked.map((s) => s.c).sort((a, b) => a - b);
 
   const vertMean = vert.length ? vert.reduce((a, b) => a + b, 0) / vert.length : 0;
   const roughness = vert.length
     ? Math.sqrt(vert.reduce((a, b) => a + (b - vertMean) ** 2, 0) / vert.length)
     : 0;
 
-  const brakes = detectEvents(samples, (s) => s.lon, BRAKE_THRESHOLD, -1);
-  const accels = detectEvents(samples, (s) => s.lon, BRAKE_THRESHOLD, 1);
-  const cornersL = detectEvents(samples, (s) => s.lat, CORNER_THRESHOLD, 1);
-  const cornersR = detectEvents(samples, (s) => s.lat, CORNER_THRESHOLD, -1);
+  const brakes = detectEvents(despiked, (s) => s.lon, BRAKE_THRESHOLD, -1);
+  const accels = detectEvents(despiked, (s) => s.lon, BRAKE_THRESHOLD, 1);
+  const cornersL = detectEvents(despiked, (s) => s.lat, CORNER_THRESHOLD, 1);
+  const cornersR = detectEvents(despiked, (s) => s.lat, CORNER_THRESHOLD, -1);
 
   const durationMs = samples.length ? samples[samples.length - 1].t - samples[0].t : 0;
   const histogram = HIST_BUCKETS.map((edge, i) => {
@@ -262,8 +290,8 @@ async function analyze(dir, axesConfig, options) {
       sustained: +percentile(sortedLat, 95).toFixed(3)
     },
     longitudinal: {
-      peakBraking: +Math.abs(Math.min(0, ...samples.map((s) => s.lon))).toFixed(3),
-      peakAccel: +Math.max(0, ...samples.map((s) => s.lon)).toFixed(3),
+      peakBraking: +Math.abs(Math.min(0, ...despiked.map((s) => s.lon))).toFixed(3),
+      peakAccel: +Math.max(0, ...despiked.map((s) => s.lon)).toFixed(3),
       sustained: +percentile(sortedLon, 95).toFixed(3)
     },
     combined: {

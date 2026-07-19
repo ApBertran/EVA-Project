@@ -6,8 +6,15 @@ const L_PER_GAL = 3.785411784;
 const MIN_GEAR_SPEED_KPH = 15;
 const MIN_GEAR_RPM = 900;
 const GEAR_TOLERANCE = 0.06;
-const MIN_GEAR_SHARE = 0.008;
-const MIN_GEAR_SAMPLES = 15;
+/* 3% cleanly separates real gears from shift transients: in a 12 minute log
+   the five real gears held 4.0-51.1% each, while every fabricated cluster sat
+   under 2.2%. */
+const MIN_GEAR_SHARE = 0.03;
+const MIN_GEAR_SAMPLES = 20;
+/* reject a ratio if it moved more than this between consecutive measured
+   samples - that means the clutch is out and we are mid-shift */
+const GEAR_STABLE_TOLERANCE = 0.04;
+const GEAR_PAIR_WINDOW_MS = 500;
 
 function seriesFor(rows, pid) {
   return rows.filter((r) => r.pid === pid).map((r) => ({ t: r.t, v: r.v }));
@@ -41,6 +48,38 @@ function stats(series) {
     max: +Math.max(...values).toFixed(2),
     mean: +(sum / values.length).toFixed(2)
   };
+}
+
+/* Gear ratios must come from MEASURED samples, never the 250ms interpolated
+   timeline. Interpolating across a shift sweeps smoothly through every
+   intermediate ratio, and those intermediates cluster into convincing but
+   entirely fictional gears - a 5 speed manual was reported as 10 gears.
+   Pair each measured RPM reading with a nearby measured speed reading, then
+   keep only ratios that are stable against their neighbour. */
+function measuredGearRatios(rpmSeries, speedSeries, tireFactor) {
+  if (!rpmSeries.length || !speedSeries.length) return [];
+  const raw = [];
+  let si = 0;
+  for (const r of rpmSeries) {
+    while (si < speedSeries.length - 1 && speedSeries[si + 1].t <= r.t) si++;
+    let best = speedSeries[si];
+    if (si + 1 < speedSeries.length && Math.abs(speedSeries[si + 1].t - r.t) < Math.abs(best.t - r.t)) {
+      best = speedSeries[si + 1];
+    }
+    if (Math.abs(best.t - r.t) > GEAR_PAIR_WINDOW_MS) continue;
+    const v = best.v * tireFactor;
+    if (v <= MIN_GEAR_SPEED_KPH || r.v <= MIN_GEAR_RPM) continue;
+    raw.push({ t: r.t, ratio: r.v / v });
+  }
+
+  const stable = [];
+  for (let i = 0; i < raw.length; i++) {
+    const prev = raw[i - 1];
+    const next = raw[i + 1];
+    const close = (a, b) => a && b && Math.abs(a.ratio - b.ratio) / b.ratio <= GEAR_STABLE_TOLERANCE;
+    if (close(prev, raw[i]) || close(next, raw[i])) stable.push(raw[i].ratio);
+  }
+  return stable;
 }
 
 function clusterGears(ratios) {
@@ -86,6 +125,12 @@ function analyseObd(rows, options) {
   const speed = seriesFor(rows, '0D');
   const maf = seriesFor(rows, '10');
   const throttle = seriesFor(rows, '11');
+  /* extra channels for the graph view - sampled far slower than rpm/speed on
+     J1850, so they interpolate into flatter traces, which is expected */
+  const load = seriesFor(rows, '04');
+  const coolant = seriesFor(rows, '05');
+  const timing = seriesFor(rows, '0E');
+  const iat = seriesFor(rows, '0F');
 
   const start = rows[0].t;
   const end = rows[rows.length - 1].t;
@@ -94,7 +139,6 @@ function analyseObd(rows, options) {
   let distanceKm = 0;
   let fuelL = 0;
   let movingSeconds = 0;
-  const ratios = [];
   const timeline = [];
 
   for (let t = start; t <= end; t += stepMs) {
@@ -113,19 +157,22 @@ function analyseObd(rows, options) {
       lph = (m / STOICH_AFR / GASOLINE_G_PER_L) * 3600;
       fuelL += (lph * dt) / 3600;
     }
-    if (r !== null && v !== null && v > MIN_GEAR_SPEED_KPH && r > MIN_GEAR_RPM) {
-      ratios.push(r / v);
-    }
+    const pick = (series) => (series.length ? +sampleAt(series, t).toFixed(1) : null);
     timeline.push({
       t,
       rpm: r === null ? null : Math.round(r),
       kph: v === null ? null : +v.toFixed(1),
       throttle: th === null ? null : +th.toFixed(1),
-      lph: lph === null ? null : +lph.toFixed(2)
+      lph: lph === null ? null : +lph.toFixed(2),
+      maf: m === null ? null : +m.toFixed(1),
+      load: pick(load),
+      coolant: pick(coolant),
+      timing: pick(timing),
+      iat: pick(iat)
     });
   }
 
-  const gears = clusterGears(ratios);
+  const gears = clusterGears(measuredGearRatios(rpm, speed, tireFactor));
   for (const g of gears) {
     g.mphPer1000 = +((1000 / g.ratio) * KPH_TO_MPH).toFixed(1);
   }

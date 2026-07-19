@@ -206,6 +206,7 @@ function openDetail(path) {
   if (!e) return;
   detailPath = path;
   document.getElementById('detail-title').innerText = e.name;
+  activeChannels = [...DEFAULT_CHANNELS];
   document.getElementById('detail-body').innerHTML = '<div class="detail-loading">Analysing\u2026</div>';
   document.getElementById('detail-modal').classList.add('open');
   socket.emit('logs:analysis', { path });
@@ -285,7 +286,11 @@ function renderDetail(payload) {
         ${s.obd.health.bankSpread !== undefined ? `<div><span>Bank spread</span><b>${s.obd.health.bankSpread}%</b></div>` : ''}
       </div></div>` : ''}
       ${s.tireCal ? `<div class="detail-section"><span>Tire calibration</span><p class="chart-note">GPS suggests a speed factor of <b>${s.tireCal.factor}</b> from ${s.tireCal.samples} samples${s.tireCal.confident ? '' : ' (low confidence - needs steadier cruising)'}.${s.tireCal.confident ? ` <button class="ghost-btn" onclick="applyTireFactor(${s.tireCal.factor})">Apply</button>` : ''}</p></div>` : ''}
-      <div class="detail-section"><span>Channels recorded</span><div class="card-chips">${Object.values(s.obd.channels).map((c) => `<span class="chip soft">${c.name} ${c.min}-${c.max}${c.unit}</span>`).join('')}</div></div>
+      <div class="detail-section"><span>Channels</span>
+        <div class="ch-picker" id="ch-picker">${CHANNEL_ORDER.map((k) => `<button class="ch-chip${DEFAULT_CHANNELS.includes(k) ? ' on' : ''}" data-ch="${k}" onclick="toggleChannel('${k}')">${OBD_CHANNELS[k].label}</button>`).join('')}</div>
+        <canvas class="chart wide" id="chart-channels"></canvas>
+        <div class="ch-legend" id="ch-legend"></div>
+      </div>
     </div>` : ''}
 
     <div class="dpane" id="dpane-map" style="display:none">
@@ -301,6 +306,27 @@ function renderDetail(payload) {
   });
 }
 
+const CHANNEL_ORDER = ['rpm', 'kph', 'throttle', 'load', 'coolant', 'maf', 'timing', 'iat'];
+const DEFAULT_CHANNELS = ['rpm', 'kph', 'throttle'];
+let activeChannels = [...DEFAULT_CHANNELS];
+
+function renderChannels() {
+  if (!detailSeries || !detailSeries.obd) return;
+  drawChannels(document.getElementById('chart-channels'), detailSeries.obd, activeChannels);
+  const legend = document.getElementById('ch-legend');
+  if (legend) legend.innerHTML = channelLegend(detailSeries.obd, activeChannels);
+}
+
+function toggleChannel(key) {
+  const i = activeChannels.indexOf(key);
+  if (i >= 0) activeChannels.splice(i, 1);
+  else activeChannels.push(key);
+  document.querySelectorAll('.ch-chip').forEach((b) => {
+    b.classList.toggle('on', activeChannels.includes(b.dataset.ch));
+  });
+  renderChannels();
+}
+
 function showDetailTab(event, name) {
   document.querySelectorAll('.dtab').forEach((t) => t.classList.remove('active'));
   event.currentTarget.classList.add('active');
@@ -313,6 +339,7 @@ function showDetailTab(event, name) {
     if (name === 'grip') drawFrictionCircle(document.getElementById('chart-gg'), detailSeries.scatter || [], Math.max(...(detailSeries.scatter || [[0, 0]]).map((p) => Math.hypot(p[0], p[1]))));
     if (name === 'map') drawTrack(document.getElementById('chart-track'), detailSeries.track || []);
     if (name === 'overview') drawTimeline(document.getElementById('chart-timeline'), detailSeries.series || []);
+    if (name === 'engine') renderChannels();
   });
 }
 
