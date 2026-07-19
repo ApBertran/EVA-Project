@@ -1,10 +1,10 @@
 const SMOOTHING = 0.35;
-const SPIKE_WINDOW = 19;
+const SPIKE_WINDOW = 31;
 
-const LATERAL_INDEX = 1;
-const LONGITUDINAL_INDEX = 0;
-const LATERAL_INVERTED = false;
-const LONGITUDINAL_INVERTED = false;
+let LATERAL_INDEX = 1;
+let LONGITUDINAL_INDEX = 0;
+let LATERAL_INVERTED = false;
+let LONGITUDINAL_INVERTED = false;
 const SHOW_FELT_DIRECTION = true;
 
 let peak = {
@@ -44,6 +44,19 @@ const socket = io.connect('http://localhost:3000');
 
 socket.on('connect', () => {
   console.log('Connected to server');
+});
+
+socket.on('config', (payload) => {
+  if (!payload) return;
+  if (payload.settings) {
+    if (typeof payload.settings.maxG === 'number') maxG = payload.settings.maxG;
+    if (typeof payload.settings.peakHold === 'number') peak.disappearAfter = payload.settings.peakHold * 1000;
+  }
+  if (!payload.axes) return;
+  LATERAL_INDEX = payload.axes.lateral;
+  LONGITUDINAL_INDEX = payload.axes.longitudinal;
+  LATERAL_INVERTED = !!payload.axes.lateralInvert;
+  LONGITUDINAL_INVERTED = !!payload.axes.longitudinalInvert;
 });
 
 socket.on('gforce-update', (gForceArray) => {

@@ -89,3 +89,32 @@ body {
 @keyframes fill {
   to { width: 100%; }
 }
+
+/* Day mode: the boot sequence keeps its shape but inverts, so a daylight boot
+   never flashes a near-black screen. Accents darken to stay legible on light. */
+:root[data-theme="day"] body {
+  background: radial-gradient(ellipse at 50% 45%, #ffffff 0%, #d3d9db 65%);
+  color: #0b1013;
+}
+
+:root[data-theme="day"] .mark {
+  color: #0a6e5c;
+  text-shadow: 0 0 4vw rgba(10, 110, 92, 0.25);
+}
+
+:root[data-theme="day"] .typewriter {
+  color: #4a575d;
+}
+
+:root[data-theme="day"] .typewriter::after {
+  background: #0a6e5c;
+}
+
+:root[data-theme="day"] .boot-bar {
+  background: #b6bfc2;
+}
+
+:root[data-theme="day"] .boot-bar::after {
+  background: linear-gradient(90deg, #0d8f78, #0a6e5c);
+  box-shadow: 0 0 1vw rgba(10, 110, 92, 0.4);
+}
