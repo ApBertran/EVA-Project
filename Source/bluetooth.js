@@ -115,14 +115,75 @@ async function listDevices() {
   return devices;
 }
 
-async function setDiscovery(on) {
-  try {
-    await callMethod(ADAPTER, IFACE_ADAPTER, on ? 'StartDiscovery' : 'StopDiscovery');
-    return true;
-  } catch (e) {
-    /* "already in progress" / "not started" are benign */
-    return false;
+/* Discovery is owned by the D-Bus client that started it. A one-shot
+   `busctl call StartDiscovery` therefore scans for nothing: busctl exits, the
+   client disconnects, and BlueZ cancels the scan immediately - Discovering
+   reads false a moment later. Hold a bluetoothctl process open for the
+   duration instead. */
+let scanProc = null;
+
+function setDiscovery(on) {
+  const { spawn } = require('child_process');
+  if (on) {
+    if (scanProc) return Promise.resolve(true);
+    scanProc = spawn('bluetoothctl', [], { stdio: ['pipe', 'ignore', 'ignore'] });
+    scanProc.on('close', () => { scanProc = null; });
+    scanProc.stdin.write('scan on\n');
+    return Promise.resolve(true);
   }
+  if (scanProc) {
+    try {
+      scanProc.stdin.write('scan off\n');
+      scanProc.stdin.end();
+    } catch (e) { /* already gone */ }
+    scanProc.kill();
+    scanProc = null;
+  }
+  return Promise.resolve(true);
+}
+
+/* Let the PHONE initiate pairing. More reliable than scanning for a handset,
+   which only advertises while its Bluetooth settings screen is open.
+   Discoverable/Pairable are plain properties and persist, but accepting a
+   pairing request needs a live agent, so a bluetoothctl process is held open
+   for the pairing window. NoInputNoOutput means no PIN prompt on a head unit
+   that has no keyboard at boot. */
+let agentProc = null;
+
+function setDiscoverable(on, windowSeconds) {
+  const { spawn } = require('child_process');
+  if (!on) {
+    if (agentProc) { try { agentProc.stdin.end(); } catch (e) {} agentProc.kill(); agentProc = null; }
+    return Promise.all([
+      setProp(ADAPTER, IFACE_ADAPTER, 'Discoverable', 'b', 'false').catch(() => {}),
+      setProp(ADAPTER, IFACE_ADAPTER, 'Pairable', 'b', 'false').catch(() => {})
+    ]).then(() => true);
+  }
+  if (!agentProc) {
+    agentProc = spawn('bluetoothctl', [], { stdio: ['pipe', 'ignore', 'ignore'] });
+    agentProc.on('close', () => { agentProc = null; });
+    agentProc.stdin.write('agent NoInputNoOutput\ndefault-agent\n');
+  }
+  const secs = Number(windowSeconds) || 180;
+  return Promise.all([
+    setProp(ADAPTER, IFACE_ADAPTER, 'DiscoverableTimeout', 'u', secs).catch(() => {}),
+    setProp(ADAPTER, IFACE_ADAPTER, 'PairableTimeout', 'u', secs).catch(() => {}),
+    setProp(ADAPTER, IFACE_ADAPTER, 'Discoverable', 'b', 'true'),
+    setProp(ADAPTER, IFACE_ADAPTER, 'Pairable', 'b', 'true')
+  ]).then(() => true);
+}
+
+async function discoverableState() {
+  const [d, p, alias] = await Promise.all([
+    getProp(ADAPTER, IFACE_ADAPTER, 'Discoverable'),
+    getProp(ADAPTER, IFACE_ADAPTER, 'Pairable'),
+    getProp(ADAPTER, IFACE_ADAPTER, 'Alias')
+  ]);
+  return { discoverable: !!d, pairable: !!p, name: alias || 'EVA' };
+}
+
+async function isDiscovering() {
+  return !!(await getProp(ADAPTER, IFACE_ADAPTER, 'Discovering'));
 }
 
 /* Pairing needs the phone present and may require confirmation on the handset,
@@ -229,6 +290,9 @@ module.exports = {
   available,
   listDevices,
   setDiscovery,
+  isDiscovering,
+  setDiscoverable,
+  discoverableState,
   pair,
   connect,
   disconnect,
