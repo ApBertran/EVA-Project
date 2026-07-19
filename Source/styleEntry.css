@@ -133,3 +133,27 @@ body.error .dots i {
   border-color: #0a6e5c;
   color: #0a6e5c;
 }
+
+/* JARVIS keypad — warm palette */
+:root[data-brand="jarvis"] body {
+  background: radial-gradient(ellipse at 50% 40%, #1a1713 0%, #100e0b 70%);
+  color: #f4efe6;
+}
+:root[data-brand="jarvis"] .prompt { color: #9a8f80; }
+:root[data-brand="jarvis"] .dots i { border-color: #342d25; }
+:root[data-brand="jarvis"] .dots i.on {
+  background: #e0a94f;
+  border-color: #e0a94f;
+  box-shadow: 0 0 14px rgba(224, 169, 79, 0.5);
+}
+:root[data-brand="jarvis"] body.error .dots i { border-color: #f0655a; }
+:root[data-brand="jarvis"] #keyboard li {
+  color: #f4efe6;
+  background: #1a1713;
+  border-color: #342d25;
+}
+:root[data-brand="jarvis"] #keyboard li:active {
+  background: #241f1a;
+  border-color: #e0a94f;
+  color: #e0a94f;
+}

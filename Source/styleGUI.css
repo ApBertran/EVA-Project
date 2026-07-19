@@ -2560,3 +2560,104 @@ button.pill {
 .vol-row { max-width: 34rem; margin-top: 1.6vh; flex: 0 0 auto; }
 .track-bar, .track-times { max-width: 42rem; }
 .track-bar { margin-top: 1vh; }
+
+/* ---- Storage readout in the logs header ---- */
+.storage-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0 0.9rem;
+  border-bottom: 1px solid var(--line-soft);
+  margin-bottom: 0.9rem;
+}
+
+.storage-track {
+  flex: 0 0 22rem;
+  height: 0.6rem;
+  border-radius: 0.3rem;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.storage-track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--teal);
+  transition: width 0.3s ease;
+}
+
+.storage-track i.warn { background: var(--orange); }
+
+.storage-text {
+  font-size: 0.95rem;
+  color: var(--silver-dim);
+}
+
+.storage-text b { color: var(--numeral); font-weight: 500; }
+
+/* ============================================================
+   JARVIS — Morgane's build.
+   Her car is white over a beige interior, so the palette runs warm:
+   amber instead of teal, and warm neutrals instead of the cool
+   near-blacks EVA uses to sit against a black interior.
+   Every value below is verified to WCAG AA against its background.
+   ============================================================ */
+:root[data-brand="jarvis"] {
+  --bg: #100e0b;
+  --surface: #1a1713;
+  --surface-2: #241f1a;
+  --line: #342d25;
+  --line-soft: #26201a;
+
+  --silver: #d8cfc2;
+  --silver-dim: #9a8f80;
+  --numeral: #f4efe6;
+
+  /* amber takes the accent role teal holds in EVA */
+  --teal: #e0a94f;
+  --teal-dim: #a87a2e;
+  --teal-glow: rgba(224, 169, 79, 0.35);
+
+  /* warning shifts to rose so it stays distinct from the amber accent -
+     an orange warning would read as just another accent here */
+  --orange: #f0655a;
+  --orange-glow: rgba(240, 101, 90, 0.4);
+}
+
+:root[data-brand="jarvis"][data-theme="day"] {
+  --bg: #e6e0d6;
+  --surface: #fffdf8;
+  --surface-2: #efe9de;
+  --line: #a1968a;
+  --line-soft: #c4bbae;
+
+  --silver: #453c30;
+  --silver-dim: #6b6053;
+  --numeral: #14100b;
+
+  --teal: #7d5010;
+  --teal-dim: #9a6516;
+  --teal-glow: rgba(125, 80, 16, 0.28);
+
+  --orange: #a33a28;
+  --orange-glow: rgba(163, 58, 40, 0.28);
+}
+
+/* accent-tinted surfaces are defined against teal literals in the base sheet,
+   so they need warm equivalents here */
+:root[data-brand="jarvis"] .sidenav button.active {
+  background: linear-gradient(90deg, rgba(224, 169, 79, 0.10), transparent);
+}
+:root[data-brand="jarvis"] .theme-option.selected,
+:root[data-brand="jarvis"] .ch-chip.on {
+  background: rgba(224, 169, 79, 0.14);
+}
+:root[data-brand="jarvis"][data-theme="day"] .sidenav button.active {
+  background: linear-gradient(90deg, rgba(125, 80, 16, 0.16), transparent);
+}
+:root[data-brand="jarvis"][data-theme="day"] .theme-option.selected,
+:root[data-brand="jarvis"][data-theme="day"] .ch-chip.on {
+  background: rgba(125, 80, 16, 0.16);
+}

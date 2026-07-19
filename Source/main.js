@@ -308,8 +308,13 @@ io.on('connection', (socket) => {
     }
   };
 
+  socket.on('logs:storage', guard(() => {
+    socket.emit('logs:storage', recorder.storage());
+  }));
+
   socket.on('logs:list', guard((payload) => {
     socket.emit('logs:listing', recorder.list(payload.path || ''));
+    socket.emit('logs:storage', recorder.storage());
   }));
 
   socket.on('logs:mkdir', guard((payload) => {
@@ -320,11 +325,13 @@ io.on('connection', (socket) => {
   socket.on('logs:rename', guard((payload) => {
     recorder.rename(payload.path, payload.name);
     socket.emit('logs:listing', recorder.list(payload.parent || ''));
+    socket.emit('logs:storage', recorder.storage());
   }));
 
   socket.on('logs:delete', guard((payload) => {
     recorder.remove(payload.path);
     socket.emit('logs:listing', recorder.list(payload.parent || ''));
+    socket.emit('logs:storage', recorder.storage());
   }));
 
   socket.on('logs:start', guard((payload) => {
@@ -353,6 +360,7 @@ io.on('connection', (socket) => {
   socket.on('logs:move', guard((payload) => {
     recorder.move(payload.path, payload.dest);
     socket.emit('logs:listing', recorder.list(payload.parent || ''));
+    socket.emit('logs:storage', recorder.storage());
   }));
 
   socket.on('logs:folders', guard(() => {
@@ -505,6 +513,7 @@ io.on('connection', (socket) => {
     const result = recorder.purge(Number(payload.days) || 30);
     socket.emit('logs:purged', result);
     socket.emit('logs:listing', recorder.list(payload.parent || ''));
+    socket.emit('logs:storage', recorder.storage());
   }));
 
   socket.on('logs:analysis', guard(async (payload) => {

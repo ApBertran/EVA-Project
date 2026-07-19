@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="daylight.js"></script>
     <script src="themeBoot.js"></script>
+    <script src="branding.js"></script>
   </head>
   <body onload="initTabs()">
 
@@ -34,7 +35,7 @@
     </div>
 
     <div class="statusbar">
-      <div class="brand">EVA</div>
+      <div class="brand" data-brand-name>EVA</div>
       <div class="right">
         <div class="pill off" id="gps-pill">GPS</div>
         <button class="pill off" id="obd-pill" onclick="openDiagnostics()">OBD</button>
@@ -102,6 +103,11 @@
           <button class="ghost-btn" onclick="newFolder()">+ Folder</button>
           <button class="primary-btn" onclick="openNewEntry()"><i class="rec-dot"></i> New Entry</button>
         </div>
+      </div>
+
+      <div class="storage-bar" id="storage-bar">
+        <div class="storage-track"><i id="storage-fill"></i></div>
+        <div class="storage-text" id="storage-text">&mdash;</div>
       </div>
 
       <div class="rec-banner" id="rec-banner">

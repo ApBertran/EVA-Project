@@ -122,3 +122,34 @@ body {
   background: linear-gradient(90deg, #0d8f78, #0a6e5c);
   box-shadow: 0 0 1vw rgba(10, 110, 92, 0.4);
 }
+
+/* JARVIS boot sequence — warm palette for the white/beige car */
+:root[data-brand="jarvis"] body {
+  background: radial-gradient(ellipse at 50% 45%, #1a1713 0%, #100e0b 65%);
+  color: #f4efe6;
+}
+:root[data-brand="jarvis"] .mark {
+  color: #e0a94f;
+  text-shadow: 0 0 4vw rgba(224, 169, 79, 0.45);
+}
+:root[data-brand="jarvis"] .typewriter { color: #d8cfc2; }
+:root[data-brand="jarvis"] .typewriter::after { background: #e0a94f; }
+:root[data-brand="jarvis"] .boot-bar { background: #241f1a; }
+:root[data-brand="jarvis"] .boot-bar::after {
+  background: linear-gradient(90deg, #a87a2e, #e0a94f);
+  box-shadow: 0 0 1vw rgba(224, 169, 79, 0.6);
+}
+:root[data-brand="jarvis"][data-theme="day"] body {
+  background: radial-gradient(ellipse at 50% 45%, #fffdf8 0%, #e6e0d6 65%);
+  color: #14100b;
+}
+:root[data-brand="jarvis"][data-theme="day"] .mark {
+  color: #7d5010;
+  text-shadow: 0 0 4vw rgba(125, 80, 16, 0.25);
+}
+:root[data-brand="jarvis"][data-theme="day"] .typewriter { color: #453c30; }
+:root[data-brand="jarvis"][data-theme="day"] .typewriter::after { background: #7d5010; }
+:root[data-brand="jarvis"][data-theme="day"] .boot-bar { background: #c4bbae; }
+:root[data-brand="jarvis"][data-theme="day"] .boot-bar::after {
+  background: linear-gradient(90deg, #9a6516, #7d5010);
+}

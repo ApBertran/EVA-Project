@@ -566,6 +566,28 @@ socket.on('config', (payload) => {
   renderGpsFields();
 });
 
+function fmtBytes(b) {
+  if (typeof b !== 'number') return '--';
+  const gb = b / 1073741824;
+  if (gb >= 1) return `${gb.toFixed(gb >= 10 ? 0 : 1)} GB`;
+  return `${Math.max(1, Math.round(b / 1048576))} MB`;
+}
+
+socket.on('logs:storage', (s) => {
+  const fill = document.getElementById('storage-fill');
+  const text = document.getElementById('storage-text');
+  if (!fill || !text) return;
+  if (!s) {
+    text.innerText = 'Storage unavailable';
+    return;
+  }
+  fill.style.width = `${Math.min(100, s.usedPercent)}%`;
+  /* warn before the card fills: a full disk stops a recording mid-drive */
+  fill.classList.toggle('warn', s.usedPercent >= 85);
+  text.innerHTML = `<b>${fmtBytes(s.freeBytes)}</b> free of ${fmtBytes(s.totalBytes)}
+    &middot; logs ${fmtBytes(s.logsBytes)} &middot; ${s.usedPercent}% used`;
+});
+
 socket.on('logs:error', (payload) => {
   const toast = document.getElementById('toast');
   toast.innerText = payload.message;
@@ -586,6 +608,7 @@ socket.on('logs:error', (payload) => {
 document.addEventListener('DOMContentLoaded', () => {
   refresh();
   socket.emit('logs:state');
+  socket.emit('logs:storage');
 });
 
 refresh();
