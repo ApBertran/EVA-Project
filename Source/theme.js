@@ -1,6 +1,15 @@
-let themeMode = 'auto';
+/* Seed from the URL that main.js built. Without this the renderer would assume
+   'auto', re-resolve with no GPS fix, and briefly paint the wrong palette over
+   what themeBoot.js already stamped - a visible flash until config arrives. */
+const themeParams = new URLSearchParams(window.location.search);
+let themeMode = themeParams.get('mode') || 'auto';
 let themeFix = null;
-let appliedTheme = null;
+const bootLat = parseFloat(themeParams.get('lat'));
+const bootLon = parseFloat(themeParams.get('lon'));
+if (!Number.isNaN(bootLat) && !Number.isNaN(bootLon)) themeFix = { lat: bootLat, lon: bootLon };
+/* themeBoot.js already applied this; record it so applyTheme() is a no-op
+   rather than a repaint. */
+let appliedTheme = document.documentElement.getAttribute('data-theme');
 
 function applyTheme(mode) {
   if (mode === appliedTheme) return;

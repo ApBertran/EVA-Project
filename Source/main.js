@@ -133,11 +133,10 @@ function resolvePython() {
 }
 
 const pythonScriptPath = path.join(sourceDir, 'BerryIMU/python-BerryIMU-measure-G/imu-logger.py');
-const pythonProcess = spawn(resolvePython(), [pythonScriptPath]);
-
+let pythonProcess = null;
 let buffer = '';
 
-pythonProcess.stdout.on('data', (data) => {
+function onImuData(data) {
   buffer += data.toString();
   let lines = buffer.split('\n');
   buffer = lines.pop();
@@ -155,15 +154,26 @@ pythonProcess.stdout.on('data', (data) => {
       console.error('Error parsing IMU sample:', e.message);
     }
   });
-});
+}
 
-pythonProcess.stderr.on('data', (data) => {
-  console.error('Error from Python script:', data.toString());
-});
+/* Deferred rather than started at require time. resolvePython() probes with
+   blocking execFileSync calls, and the logger then samples at 100Hz - both
+   competing with the boot animation for a CPU that is already throttled.
+   The welcome screen runs 3.5s, so start just after it hands off. */
+const IMU_START_DELAY_MS = 3800;
 
-pythonProcess.on('close', (code) => {
-  console.log(`Python script exited with code ${code}`);
-});
+function startImuLogger() {
+  if (pythonProcess) return;
+  pythonProcess = spawn(resolvePython(), [pythonScriptPath]);
+  pythonProcess.stdout.on('data', onImuData);
+  pythonProcess.stderr.on('data', (data) => {
+    console.error('Error from Python script:', data.toString());
+  });
+  pythonProcess.on('close', (code) => {
+    console.log(`Python script exited with code ${code}`);
+    pythonProcess = null;
+  });
+}
 
 
 let calibration = null;
@@ -485,18 +495,37 @@ function bootTheme() {
   return daylight.resolve(opts).mode;
 }
 
+/* Must match --bg for each theme in styleGUI.css. Electron paints the window
+   background before any document renders, so leaving this at the default white
+   flashes a bright frame on every navigation - very visible at night. */
+const THEME_BG = { day: '#d3d9db', night: '#0b0d0e' };
+
 const createWindow = () => {
+  const theme = bootTheme();
+  const mode = (config.theme && config.theme.mode) || 'auto';
+
   const mainWindow = new BrowserWindow({
-    fullscreen: true
+    fullscreen: true,
+    backgroundColor: THEME_BG[theme] || THEME_BG.night
   });
 
-  mainWindow.loadFile(path.join(sourceDir, 'welcomeMessage.html'), {
-    query: { theme: bootTheme() }
-  });
+  /* mode rides along so theme.js starts in the right state instead of
+     assuming 'auto' and re-resolving to the wrong palette before config lands */
+  const query = { theme, mode };
+  /* hand over the fix too, so an 'auto' renderer resolves identically to main
+     instead of falling back to 7am/7pm and disagreeing */
+  const fix = gpsStatus.lastFix;
+  if (fix && typeof fix.lat === 'number' && typeof fix.lon === 'number') {
+    query.lat = String(fix.lat);
+    query.lon = String(fix.lon);
+  }
+
+  mainWindow.loadFile(path.join(sourceDir, 'welcomeMessage.html'), { query });
 };
 
 app.whenReady().then(() => {
   createWindow();
+  setTimeout(startImuLogger, IMU_START_DELAY_MS);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
