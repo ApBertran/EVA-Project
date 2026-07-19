@@ -207,6 +207,7 @@ function openDetail(path) {
   detailPath = path;
   document.getElementById('detail-title').innerText = e.name;
   activeChannels = [...DEFAULT_CHANNELS];
+  channelWindow = null;
   document.getElementById('detail-body').innerHTML = '<div class="detail-loading">Analysing\u2026</div>';
   document.getElementById('detail-modal').classList.add('open');
   socket.emit('logs:analysis', { path });
@@ -288,7 +289,8 @@ function renderDetail(payload) {
       ${s.tireCal ? `<div class="detail-section"><span>Tire calibration</span><p class="chart-note">GPS suggests a speed factor of <b>${s.tireCal.factor}</b> from ${s.tireCal.samples} samples${s.tireCal.confident ? '' : ' (low confidence - needs steadier cruising)'}.${s.tireCal.confident ? ` <button class="ghost-btn" onclick="applyTireFactor(${s.tireCal.factor})">Apply</button>` : ''}</p></div>` : ''}
       <div class="detail-section"><span>Channels</span>
         <div class="ch-picker" id="ch-picker">${CHANNEL_ORDER.map((k) => `<button class="ch-chip${DEFAULT_CHANNELS.includes(k) ? ' on' : ''}" data-ch="${k}" onclick="toggleChannel('${k}')">${OBD_CHANNELS[k].label}</button>`).join('')}</div>
-        <canvas class="chart wide" id="chart-channels"></canvas>
+        <div class="zoom-bar" id="zoom-bar"></div>
+        <canvas class="chart wide zoomable" id="chart-channels"></canvas>
         <div class="ch-legend" id="ch-legend"></div>
       </div>
     </div>` : ''}
@@ -310,9 +312,76 @@ const CHANNEL_ORDER = ['rpm', 'kph', 'throttle', 'load', 'coolant', 'maf', 'timi
 const DEFAULT_CHANNELS = ['rpm', 'kph', 'throttle'];
 let activeChannels = [...DEFAULT_CHANNELS];
 
+let channelWindow = null;      // {startT, endT} or null for the full trip
+
+function channelBounds() {
+  const tl = detailSeries && detailSeries.obd;
+  if (!tl || !tl.length) return null;
+  return { startT: tl[0].t, endT: tl[tl.length - 1].t };
+}
+
+function fmtElapsed(ms) {
+  const s = Math.max(0, Math.round(ms / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+function renderZoomBar() {
+  const el = document.getElementById('zoom-bar');
+  if (!el) return;
+  const full = channelBounds();
+  if (!full) return;
+  if (!channelWindow) {
+    el.innerHTML = '<span>Drag across the graph to zoom into a time range.</span>';
+    return;
+  }
+  const a = fmtElapsed(channelWindow.startT - full.startT);
+  const b = fmtElapsed(channelWindow.endT - full.startT);
+  el.innerHTML = `<span>Showing <b class="zoom-range">${a} &ndash; ${b}</b></span>
+    <button class="ghost-btn" onclick="resetZoom()">Reset</button>`;
+}
+
+function resetZoom() {
+  channelWindow = null;
+  renderChannels();
+}
+
+/* Map an x pixel to a timestamp using the same padding drawChannels uses, so
+   the selection lines up with what is actually drawn. */
+function xToTime(canvas, clientX) {
+  const rect = canvas.getBoundingClientRect();
+  const padL = 8;
+  const padR = 8;
+  const plotW = rect.width - padL - padR;
+  const frac = Math.max(0, Math.min(1, (clientX - rect.left - padL) / plotW));
+  const view = channelWindow || channelBounds();
+  if (!view) return null;
+  return view.startT + frac * (view.endT - view.startT);
+}
+
+function attachZoom(canvas) {
+  if (!canvas || canvas.dataset.zoomBound) return;
+  canvas.dataset.zoomBound = '1';
+  let pressT = null;
+  canvas.addEventListener('pointerdown', (e) => { pressT = xToTime(canvas, e.clientX); });
+  canvas.addEventListener('pointerup', (e) => {
+    const end = xToTime(canvas, e.clientX);
+    if (pressT === null || end === null) return;
+    const lo = Math.min(pressT, end);
+    const hi = Math.max(pressT, end);
+    pressT = null;
+    /* ignore taps and hair-thin drags - they are almost never intentional */
+    if (hi - lo < 750) return;
+    channelWindow = { startT: lo, endT: hi };
+    renderChannels();
+  });
+}
+
 function renderChannels() {
   if (!detailSeries || !detailSeries.obd) return;
-  drawChannels(document.getElementById('chart-channels'), detailSeries.obd, activeChannels);
+  const canvas = document.getElementById('chart-channels');
+  drawChannels(canvas, detailSeries.obd, activeChannels, channelWindow);
+  attachZoom(canvas);
+  renderZoomBar();
   const legend = document.getElementById('ch-legend');
   if (legend) legend.innerHTML = channelLegend(detailSeries.obd, activeChannels);
 }

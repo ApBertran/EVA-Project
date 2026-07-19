@@ -13,6 +13,8 @@ const analysis = require('./analysis');
 const exporter = require('./exporter');
 const { ObdLink, PIDS: OBD_PIDS, DEFAULT_PIDS: obdDefaults } = require('./obd');
 const daylight = require('./daylight');
+const bluetooth = require('./bluetooth');
+const wifi = require('./wifi');
 
 function obdPidTable() {
   return Object.fromEntries(
@@ -266,6 +268,30 @@ function broadcastState() {
   io.emit('logs:state', recorder.state());
 }
 
+
+async function btState() {
+  const [devices, disc, playing, volume] = await Promise.all([
+    bluetooth.listDevices().catch(() => []),
+    bluetooth.discoverableState().catch(() => ({ discoverable: false, pairable: false, name: 'EVA' })),
+    bluetooth.nowPlaying().catch(() => ({ available: false })),
+    bluetooth.getVolume().catch(() => null)
+  ]);
+  return { devices, ...disc, playing, volume };
+}
+
+/* Poll now-playing only while a player exists. AVRCP has no push here, and the
+   track changes on the phone without EVA being told. */
+let btPollTimer = null;
+function startBtPolling() {
+  if (btPollTimer) return;
+  btPollTimer = setInterval(async () => {
+    try {
+      const playing = await bluetooth.nowPlaying();
+      io.emit('bt:playing', playing);
+    } catch (e) { /* adapter went away; next tick retries */ }
+  }, 2000);
+}
+
 io.on('connection', (socket) => {
   console.log('Client connected');
 
@@ -369,6 +395,75 @@ io.on('connection', (socket) => {
   socket.on('obd:define', guard((payload) => {
     dtcLib.saveUserDefinition(payload.code, payload.text);
     socket.emit('obd:defined', dtcLib.lookup(payload.code));
+  }));
+
+
+  socket.on('wifi:state', guard(async () => {
+    socket.emit('wifi:state', await wifi.status());
+  }));
+
+  socket.on('wifi:scan', guard(async (payload) => {
+    const networks = await wifi.scan(!!payload.force);
+    socket.emit('wifi:networks', { networks });
+  }));
+
+  socket.on('wifi:connect', guard(async (payload) => {
+    const state = await wifi.connect(payload.ssid, payload.password);
+    socket.emit('wifi:state', state);
+    socket.emit('wifi:networks', { networks: await wifi.scan(false) });
+  }));
+
+  socket.on('wifi:disconnect', guard(async () => {
+    socket.emit('wifi:state', await wifi.disconnect());
+    socket.emit('wifi:networks', { networks: await wifi.scan(false) });
+  }));
+
+  socket.on('bt:state', guard(async () => {
+    socket.emit('bt:state', await btState());
+  }));
+
+  socket.on('bt:scan', guard(async (payload) => {
+    await bluetooth.setDiscovery(!!payload.on);
+    socket.emit('bt:state', await btState());
+  }));
+
+  socket.on('bt:discoverable', guard(async (payload) => {
+    await bluetooth.setDiscoverable(payload.on !== false, payload.seconds || 300);
+    socket.emit('bt:state', await btState());
+  }));
+
+  socket.on('bt:pair', guard(async (payload) => {
+    await bluetooth.pair(payload.mac);
+    socket.emit('bt:state', await btState());
+  }));
+
+  socket.on('bt:connect', guard(async (payload) => {
+    await bluetooth.connect(payload.mac);
+    socket.emit('bt:state', await btState());
+  }));
+
+  socket.on('bt:disconnect', guard(async (payload) => {
+    await bluetooth.disconnect(payload.mac);
+    socket.emit('bt:state', await btState());
+  }));
+
+  socket.on('bt:forget', guard(async (payload) => {
+    await bluetooth.remove(payload.mac);
+    socket.emit('bt:state', await btState());
+  }));
+
+  /* Transport commands are fire-and-forget: the phone is the source of truth,
+     so the follow-up poll reports what actually happened rather than assuming. */
+  socket.on('bt:control', guard(async (payload) => {
+    await bluetooth.control(payload.cmd);
+    setTimeout(async () => {
+      try { io.emit('bt:playing', await bluetooth.nowPlaying()); } catch (e) {}
+    }, 350);
+  }));
+
+  socket.on('bt:volume', guard(async (payload) => {
+    const v = await bluetooth.setVolume(payload.percent);
+    socket.emit('bt:volume', { percent: v });
   }));
 
   socket.on('settings:theme', guard((payload) => {
@@ -478,6 +573,8 @@ io.on('connection', (socket) => {
 setInterval(() => {
   if (recorder.state().recording) broadcastState();
 }, 1000);
+
+startBtPolling();
 
 /* The renderer cannot work this out before first paint on its own: localStorage
    is blocked on file:// URLs, and the socket config arrives well after the boot

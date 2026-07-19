@@ -221,7 +221,17 @@ const OBD_CHANNELS = {
   lph:      { label: 'Fuel Rate',    unit: 'L/h',  color: () => '#d4915d' }
 };
 
-function drawChannels(canvas, timeline, keys) {
+function drawChannels(canvas, timeline, keys, window) {
+  /* window is {startT, endT} in absolute ms; slicing here rather than at the
+     call site keeps the caller's full-resolution series intact for reset. */
+  if (window && window.startT != null && window.endT != null) {
+    const sliced = timeline.filter((p) => p.t >= window.startT && p.t <= window.endT);
+    if (sliced.length > 1) timeline = sliced;
+  }
+  return drawChannelsInner(canvas, timeline, keys);
+}
+
+function drawChannelsInner(canvas, timeline, keys) {
   const { ctx, w, h } = setupCanvas(canvas);
   ctx.clearRect(0, 0, w, h);
   if (!timeline || !timeline.length || !keys.length) {

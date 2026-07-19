@@ -19,9 +19,9 @@
         <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.5.4.8 1 .8 1.6v.5h5.4v-.5c0-.6.3-1.2.8-1.6A6 6 0 0 0 12 3z"/></svg>
         Lights
       </button>
-      <button class="tablinks" onclick="openTab(event, 'Video')">
-        <svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 11 6-3.5v9L15 13z"/></svg>
-        Video
+      <button class="tablinks" onclick="openTab(event, 'Music')">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Music
       </button>
       <button class="tablinks" onclick="openTab(event, 'Logs')">
         <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
@@ -36,8 +36,10 @@
     <div class="statusbar">
       <div class="brand">EVA</div>
       <div class="right">
-        <div class="pill">GPS</div>
+        <div class="pill off" id="gps-pill">GPS</div>
         <button class="pill off" id="obd-pill" onclick="openDiagnostics()">OBD</button>
+        <button class="pill off" id="wifi-pill" onclick="openWifi()">WIFI</button>
+        <button class="pill off" id="bt-pill" onclick="openBluetooth()">BT</button>
         <div id="clock">--:--</div>
         <button class="gear" id="gear-btn" onclick="openSettings()" aria-label="Settings">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -75,7 +77,11 @@
       </div>
     </div>
 
-    <div id="Video" class="tabcontent">
+    <div id="Music" class="tabcontent">
+      <div class="music-full" id="music-now"></div>
+    </div>
+
+    <div id="Video" class="tabcontent" hidden>
       <div class="panel-title">Camera</div>
       <div class="empty">
         <svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 11 6-3.5v9L15 13z"/></svg>
@@ -318,6 +324,39 @@
       </div>
     </div>
 
+    <div class="settings-overlay" id="wifi-modal">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2>Wi-Fi <span class="badge" id="wifi-state">Off</span></h2>
+          <button class="close-btn" onclick="closeWifi()" aria-label="Close">&times;</button>
+        </div>
+        <div class="bt-controls">
+          <button class="primary-btn" onclick="wifiScan()">Scan</button>
+          <button class="ghost-btn" onclick="wifiDisconnect()">Disconnect</button>
+        </div>
+        <div class="bt-list" id="wifi-list"></div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="bt-modal">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2>Bluetooth <span class="badge" id="bt-visible-state">Hidden</span></h2>
+          <button class="close-btn" onclick="closeBluetooth()" aria-label="Close">&times;</button>
+        </div>
+        <div class="bt-controls">
+          <button class="primary-btn" onclick="btToggleVisible()">Make EVA Visible</button>
+          <button class="ghost-btn" id="bt-scan-btn" onclick="btToggleScan()">Scan</button>
+        </div>
+        <p class="chart-note">Pair from your phone's Bluetooth screen while EVA is visible &mdash; more reliable than scanning, since phones only advertise while that screen is open.</p>
+        <div class="bt-manual">
+          <input type="text" id="bt-mac-input" class="text-input" placeholder="AA:BB:CC:DD:EE:FF" onfocus="showKeyboard(this)">
+          <button class="ghost-btn" onclick="btManualConnect()">Connect</button>
+        </div>
+        <div class="bt-list" id="music-devices"></div>
+      </div>
+    </div>
+
     <div class="settings-overlay" id="health-modal">
       <div class="settings-card">
         <div class="settings-head">
@@ -389,6 +428,8 @@
     <script type="text/javascript" src="charts.js"></script>
 
     <script type="text/javascript" src="logs.js"></script>
+    <script type="text/javascript" src="music.js"></script>
+    <script type="text/javascript" src="wifiui.js"></script>
 
     <script type="text/javascript" src="calibration.js"></script>
 
