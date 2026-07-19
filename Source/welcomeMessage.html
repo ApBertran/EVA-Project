@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="styleWelcome.css">
+    <script src="daylight.js"></script>
+    <script src="themeBoot.js"></script>
 </head>
 <body onload="loadUp()">
     <div class="mark">EVA</div>
@@ -13,7 +16,8 @@
                 setTimeout(swapGUI, 3500);
             }
         function swapGUI() {
-            window.location = "gui.html";
+            // carry ?theme= forward so gui.html paints in the right palette
+            window.location = "gui.html" + window.location.search;
         }
     </script>
 </body>

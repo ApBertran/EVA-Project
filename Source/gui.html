@@ -3,7 +3,10 @@
 <html>
   <head>
     <link rel="stylesheet" href="styleGUI.css">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="daylight.js"></script>
+    <script src="themeBoot.js"></script>
   </head>
   <body onload="initTabs()">
 
@@ -16,9 +19,9 @@
         <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.5.4.8 1 .8 1.6v.5h5.4v-.5c0-.6.3-1.2.8-1.6A6 6 0 0 0 12 3z"/></svg>
         Lights
       </button>
-      <button class="tablinks" onclick="openTab(event, 'Video')">
-        <svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 11 6-3.5v9L15 13z"/></svg>
-        Video
+      <button class="tablinks" onclick="openTab(event, 'Music')">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Music
       </button>
       <button class="tablinks" onclick="openTab(event, 'Logs')">
         <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
@@ -33,8 +36,10 @@
     <div class="statusbar">
       <div class="brand">EVA</div>
       <div class="right">
-        <div class="pill">GPS</div>
-        <div class="pill off">OBD</div>
+        <div class="pill off" id="gps-pill">GPS</div>
+        <button class="pill off" id="obd-pill" onclick="openDiagnostics()">OBD</button>
+        <button class="pill off" id="wifi-pill" onclick="openWifi()">WIFI</button>
+        <button class="pill off" id="bt-pill" onclick="openBluetooth()">BT</button>
         <div id="clock">--:--</div>
         <button class="gear" id="gear-btn" onclick="openSettings()" aria-label="Settings">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -72,7 +77,11 @@
       </div>
     </div>
 
-    <div id="Video" class="tabcontent">
+    <div id="Music" class="tabcontent">
+      <div class="music-full" id="music-now"></div>
+    </div>
+
+    <div id="Video" class="tabcontent" hidden>
       <div class="panel-title">Camera</div>
       <div class="empty">
         <svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 11 6-3.5v9L15 13z"/></svg>
@@ -81,10 +90,33 @@
     </div>
 
     <div id="Logs" class="tabcontent">
-      <div class="panel-title">Logs &amp; Maintenance</div>
-      <div class="empty">
-        <svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
-        <span>No entries</span>
+      <div class="logs-header">
+        <div class="logs-nav">
+          <button class="ghost-btn" id="logs-up" onclick="goUp()">&larr;</button>
+          <div class="breadcrumb" id="logs-breadcrumb"></div>
+        </div>
+        <div class="logs-actions">
+          <button class="ghost-btn" onclick="openHealth()">Health</button>
+          <button class="ghost-btn" onclick="openExport()">Export</button>
+          <button class="ghost-btn" onclick="openPurge()">Purge</button>
+          <button class="ghost-btn" onclick="newFolder()">+ Folder</button>
+          <button class="primary-btn" onclick="openNewEntry()"><i class="rec-dot"></i> New Entry</button>
+        </div>
+      </div>
+
+      <div class="rec-banner" id="rec-banner">
+        <div class="rec-live"><i class="rec-dot pulse"></i> Recording</div>
+        <div class="rec-info">
+          <span id="rec-name"></span>
+          <span id="rec-counts" class="dim"></span>
+        </div>
+        <div class="rec-elapsed" id="rec-elapsed">0s</div>
+        <button class="stop-btn" onclick="stopRecording()">Stop</button>
+      </div>
+
+      <div class="logs-scroll">
+        <div class="logs-folders" id="logs-folders"></div>
+        <div class="logs-grid" id="logs-grid"></div>
       </div>
     </div>
 
@@ -132,13 +164,250 @@
         <div class="settings-section">
           <div class="section-title">Suspension <span class="badge">Servos not connected</span></div>
           <div class="setting-row">
-            <label for="damping-slider">Damping <span id="damping-value">16</span></label>
-            <input type="range" id="damping-slider" class="slider" min="1" max="32" value="16" step="1">
+            <label>Damping <span id="damping-value">16</span><span class="stepper-max">/ 32</span></label>
+            <div class="stepper">
+              <button class="stepper-btn" id="damping-down" aria-label="Soften one click">&minus;</button>
+              <div class="stepper-track"><div class="stepper-fill" id="damping-fill"></div></div>
+              <button class="stepper-btn" id="damping-up" aria-label="Firm one click">+</button>
+            </div>
             <div class="scale-ends"><span>1 &middot; Soft</span><span>Firm &middot; 32</span></div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="section-title">Display <span class="badge" id="theme-status">auto</span></div>
+          <div class="theme-picker">
+            <button class="theme-option selected" data-mode="auto" onclick="setThemeMode('auto')">Auto</button>
+            <button class="theme-option" data-mode="day" onclick="setThemeMode('day')">Day</button>
+            <button class="theme-option" data-mode="night" onclick="setThemeMode('night')">Night</button>
+          </div>
+          <p class="chart-note">Auto follows sunrise and sunset for your location once GPS has a fix. Without GPS it switches at 7am and 7pm.</p>
+        </div>
+
+        <div class="settings-section">
+          <div class="section-title">Sensor Calibration</div>
+          <p class="chart-note">Teaches EVA how the accelerometer is mounted so it can tell braking from cornering. Needs a short drive.</p>
+          <button class="primary-btn wide" onclick="openCalibration()">Run Calibration</button>
+        </div>
+
+        <div class="settings-section">
+          <div class="section-title">Location <span class="badge" id="gps-status-label">unavailable</span></div>
+          <div class="setting-row">
+            <label for="gps-mode">Source</label>
+            <select id="gps-mode" class="select" onchange="renderGpsFields()">
+              <option value="off">Off</option>
+              <option value="tcp">Phone over network (NMEA/TCP)</option>
+              <option value="serial">USB receiver (serial)</option>
+            </select>
+          </div>
+          <div id="gps-tcp-fields" style="display:none">
+            <div class="setting-row field-pair">
+              <div><label for="gps-host">Phone IP</label><input type="text" id="gps-host" class="text-input" placeholder="192.168.x.x"></div>
+              <div><label for="gps-port">Port</label><input type="text" id="gps-port" class="text-input" value="11123"></div>
+            </div>
+          </div>
+          <div id="gps-serial-fields" style="display:none">
+            <div class="setting-row field-pair">
+              <div><label for="gps-device">Device</label><input type="text" id="gps-device" class="text-input" value="/dev/ttyACM0"></div>
+              <div><label for="gps-baud">Baud</label><input type="text" id="gps-baud" class="text-input" value="9600"></div>
+            </div>
+          </div>
+          <div class="setting-row">
+            <button class="primary-btn" onclick="applyGpsConfig()">Connect</button>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="settings-overlay" id="entry-modal">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2>New Entry</h2>
+          <button class="close-btn" onclick="closeNewEntry()" aria-label="Close">&times;</button>
+        </div>
+
+        <div class="settings-section">
+          <div class="section-title">Name</div>
+          <input type="text" id="entry-name" class="text-input" placeholder="Sunday canyon run">
+        </div>
+
+        <div class="settings-section">
+          <div class="section-title">Thumbnail</div>
+          <div class="thumb-picker" id="thumb-picker"></div>
+        </div>
+
+        <div class="settings-section">
+          <div class="section-title">Record</div>
+          <label class="check-row"><input type="checkbox" id="src-gforce" checked> G-Force meter</label>
+          <label class="check-row"><input type="checkbox" id="src-gps"> Map location <span class="dim" id="gps-hint"></span></label>
+          <label class="check-row"><input type="checkbox" id="src-obd"> Engine data <span class="dim" id="obd-hint"></span></label>
+        </div>
+
+        <div class="settings-section">
+          <div class="section-title">Engine Channels</div>
+          <div class="pid-picker" id="pid-picker"></div>
+          <div class="pid-budget" id="pid-budget"></div>
+        </div>
+
+        <div class="settings-section">
+          <div class="section-title">Road Type</div>
+          <div class="road-picker" id="road-picker"></div>
+        </div>
+
+        <div class="settings-section">
+          <div class="section-title">Notes</div>
+          <textarea id="entry-notes" class="text-input" rows="3" placeholder="Surface, weather, tyre pressures, anything worth remembering"></textarea>
+        </div>
+
+        <div class="settings-section">
+          <button class="primary-btn wide" onclick="startRecording()"><i class="rec-dot"></i> Start Recording</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="text-modal">
+      <div class="settings-card narrow">
+        <div class="settings-head">
+          <h2 id="text-modal-title">Name</h2>
+          <button class="close-btn" onclick="textModalCancel()" aria-label="Close">&times;</button>
+        </div>
+        <input type="text" id="text-modal-input" class="text-input" onkeydown="if(event.key==='Enter')textModalConfirm()">
+        <div class="modal-buttons">
+          <button class="ghost-btn" onclick="textModalCancel()">Cancel</button>
+          <button class="primary-btn" onclick="textModalConfirm()">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="confirm-modal">
+      <div class="settings-card narrow">
+        <div class="settings-head">
+          <h2>Confirm</h2>
+          <button class="close-btn" onclick="closeConfirm()" aria-label="Close">&times;</button>
+        </div>
+        <p id="confirm-text" class="confirm-text"></p>
+        <div class="modal-buttons">
+          <button class="ghost-btn" onclick="closeConfirm()">Cancel</button>
+          <button class="danger-btn" id="confirm-yes">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="detail-modal">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2 id="detail-title">Entry</h2>
+          <button class="close-btn" onclick="closeDetail()" aria-label="Close">&times;</button>
+        </div>
+        <div class="detail-hero" id="detail-thumb"></div>
+        <div id="detail-body"></div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="move-modal">
+      <div class="settings-card narrow">
+        <div class="settings-head">
+          <h2>Move To</h2>
+          <button class="close-btn" onclick="closeMove()" aria-label="Close">&times;</button>
+        </div>
+        <div class="move-list" id="move-list"></div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="obd-modal">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2>Diagnostics</h2>
+          <button class="close-btn" onclick="closeDiagnostics()" aria-label="Close">&times;</button>
+        </div>
+        <div id="obd-body"></div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="wifi-modal">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2>Wi-Fi <span class="badge" id="wifi-state">Off</span></h2>
+          <button class="close-btn" onclick="closeWifi()" aria-label="Close">&times;</button>
+        </div>
+        <div class="bt-controls">
+          <button class="primary-btn" onclick="wifiScan()">Scan</button>
+          <button class="ghost-btn" onclick="wifiDisconnect()">Disconnect</button>
+        </div>
+        <div class="bt-list" id="wifi-list"></div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="bt-modal">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2>Bluetooth <span class="badge" id="bt-visible-state">Hidden</span></h2>
+          <button class="close-btn" onclick="closeBluetooth()" aria-label="Close">&times;</button>
+        </div>
+        <div class="bt-controls">
+          <button class="primary-btn" onclick="btToggleVisible()">Make EVA Visible</button>
+          <button class="ghost-btn" id="bt-scan-btn" onclick="btToggleScan()">Scan</button>
+        </div>
+        <p class="chart-note">Pair from your phone's Bluetooth screen while EVA is visible &mdash; more reliable than scanning, since phones only advertise while that screen is open.</p>
+        <div class="bt-manual">
+          <input type="text" id="bt-mac-input" class="text-input" placeholder="AA:BB:CC:DD:EE:FF" onfocus="showKeyboard(this)">
+          <button class="ghost-btn" onclick="btManualConnect()">Connect</button>
+        </div>
+        <div class="bt-list" id="music-devices"></div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="health-modal">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2>Engine Health</h2>
+          <button class="close-btn" onclick="closeHealth()" aria-label="Close">&times;</button>
+        </div>
+        <div id="health-body"></div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="export-modal">
+      <div class="settings-card narrow">
+        <div class="settings-head">
+          <h2>Export to USB</h2>
+          <button class="close-btn" onclick="closeExport()" aria-label="Close">&times;</button>
+        </div>
+        <div class="move-list" id="export-list"></div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="purge-modal">
+      <div class="settings-card narrow">
+        <div class="settings-head">
+          <h2>Purge Old Logs</h2>
+          <button class="close-btn" onclick="closePurge()" aria-label="Close">&times;</button>
+        </div>
+        <div class="setting-row">
+          <label for="purge-slider">Delete logs older than <span id="purge-days">30 days</span></label>
+          <input type="range" id="purge-slider" class="slider" min="1" max="365" value="30" step="1" oninput="updatePurgePreview()">
+          <div class="scale-ends"><span>1 day</span><span>1 year</span></div>
+        </div>
+        <div class="purge-preview" id="purge-preview"></div>
+        <div class="modal-buttons">
+          <button class="ghost-btn" onclick="closePurge()">Cancel</button>
+          <button class="danger-btn" id="purge-confirm" onclick="confirmPurge()">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-overlay" id="calib-modal">
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2>Calibration</h2>
+          <button class="close-btn" onclick="closeCalibration()" aria-label="Close">&times;</button>
+        </div>
+        <div id="calib-body"></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
 
     <script type="text/javascript" src="navMenu.js"></script>
 
@@ -155,6 +424,20 @@
     <script type="text/javascript" src="clock.js"></script>
 
     <script type="text/javascript" src="settings.js"></script>
+
+    <script type="text/javascript" src="charts.js"></script>
+
+    <script type="text/javascript" src="logs.js"></script>
+    <script type="text/javascript" src="music.js"></script>
+    <script type="text/javascript" src="wifiui.js"></script>
+
+    <script type="text/javascript" src="calibration.js"></script>
+
+    <script type="text/javascript" src="diagnostics.js"></script>
+
+    <script type="text/javascript" src="theme.js"></script>
+
+    <script type="text/javascript" src="keyboard.js"></script>
 
   </body>
 </html>

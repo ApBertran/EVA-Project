@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="styleEntry.css">
+    <script src="daylight.js"></script>
+    <script src="themeBoot.js"></script>
 </head>
 <body>
     <div class="prompt">Enter Code</div>
@@ -41,7 +44,7 @@
             paintDots();
             if (codeEnter.length == 4) {
                 if (codeEnter == confirmPassword) {
-                    window.location = "welcomeMessage.html";
+                    window.location = "welcomeMessage.html" + window.location.search;
                 } else {
                     document.body.className = "error";
                     setTimeout(function () {

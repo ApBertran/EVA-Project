@@ -97,3 +97,39 @@ body.error .dots i {
   25% { transform: translateX(-7px); }
   75% { transform: translateX(7px); }
 }
+
+/* Day mode counterpart - see styleWelcome.css */
+:root[data-theme="day"] body {
+  background: radial-gradient(ellipse at 50% 40%, #ffffff 0%, #d3d9db 70%);
+  color: #0b1013;
+}
+
+:root[data-theme="day"] .prompt {
+  color: #4a575d;
+}
+
+:root[data-theme="day"] .dots i {
+  border-color: #8a969a;
+}
+
+:root[data-theme="day"] .dots i.on {
+  background: #0a6e5c;
+  border-color: #0a6e5c;
+  box-shadow: 0 0 14px rgba(10, 110, 92, 0.4);
+}
+
+:root[data-theme="day"] body.error .dots i {
+  border-color: #983a0b;
+}
+
+:root[data-theme="day"] #keyboard li {
+  color: #0b1013;
+  background: #ffffff;
+  border-color: #8a969a;
+}
+
+:root[data-theme="day"] #keyboard li:active {
+  background: #e7ecee;
+  border-color: #0a6e5c;
+  color: #0a6e5c;
+}
