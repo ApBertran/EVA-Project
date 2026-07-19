@@ -1,14 +1,44 @@
-  // Peak magnitude of g-force
+const SMOOTHING = 0.35;
+const SPIKE_WINDOW = 19;
+
+const LATERAL_INDEX = 1;
+const LONGITUDINAL_INDEX = 0;
+const LATERAL_INVERTED = false;
+const LONGITUDINAL_INVERTED = false;
+const SHOW_FELT_DIRECTION = true;
+
 let peak = {
     magnitude: 0,
     angle: 0,
     timer: null,
-    showAfter: 1500,  // 1.5 seconds to confirm peak
-    disappearAfter: 5000  // 5 seconds to hide peak
+    hideTimer: null,
+    showAfter: 1500,
+    disappearAfter: 5000
 };
 
-  // Default max g-value
 let maxG = 1.5;
+
+function createFilter() {
+  return { window: [], value: null };
+}
+
+function applyFilter(filter, sample) {
+  filter.window.push(sample);
+  if (filter.window.length > SPIKE_WINDOW) filter.window.shift();
+
+  const despiked = filter.window.length === SPIKE_WINDOW
+    ? [...filter.window].sort((a, b) => a - b)[(SPIKE_WINDOW - 1) >> 1]
+    : sample;
+
+  filter.value = filter.value === null
+    ? despiked
+    : filter.value + SMOOTHING * (despiked - filter.value);
+
+  return filter.value;
+}
+
+const lateralFilter = createFilter();
+const longitudinalFilter = createFilter();
 
 const socket = io.connect('http://localhost:3000');
 
@@ -22,47 +52,52 @@ socket.on('gforce-update', (gForceArray) => {
   const peakVector = document.getElementById('peak-vector');
   const peakText = document.getElementById('peak-text');
 
-  // Calculate the angle and magnitude of the vector
-  const angle = Math.atan2(gForceArray[1], gForceArray[0]) * (180 / Math.PI);  // Angle in degrees
-  const magnitude = Math.min(Math.sqrt(gForceArray[0] ** 2 + gForceArray[1] ** 2) / maxG, 1);  // Normalize to maxG
+  const lateral = applyFilter(
+    lateralFilter,
+    gForceArray[LATERAL_INDEX] * (LATERAL_INVERTED ? -1 : 1)
+  );
+  const longitudinal = applyFilter(
+    longitudinalFilter,
+    gForceArray[LONGITUDINAL_INDEX] * (LONGITUDINAL_INVERTED ? -1 : 1)
+  );
 
-  // Update vector rotation and length
-  vector.style.transform = `translateX(-50%) translateY(-100%) rotate(${angle}deg) scaleY(${magnitude})`;
+  const sign = SHOW_FELT_DIRECTION ? -1 : 1;
+  const right = lateral * sign;
+  const up = longitudinal * sign;
 
-  // Display the total g-force
-  const totalGForce = (magnitude * maxG).toFixed(2);
-  gForceText.innerText = `Current: ${totalGForce} G`;
+  const angle = Math.atan2(right, up) * (180 / Math.PI);
+  const magnitude = Math.hypot(right, up);
+  const needleLength = Math.min(magnitude / maxG, 1);
 
-  // Check if current magnitude exceeds peak magnitude
-  if (magnitude * maxG > peak.magnitude * maxG) {
-    if (peak.timer) clearTimeout(peak.timer); // Clear existing timer if peak is updated
+  vector.style.transform = `translateX(-50%) translateY(-100%) rotate(${angle}deg) scaleY(${needleLength})`;
+  gForceText.innerText = `${magnitude.toFixed(2)} G`;
+
+  if (magnitude > peak.magnitude) {
+    if (peak.timer) clearTimeout(peak.timer);
+    if (peak.hideTimer) clearTimeout(peak.hideTimer);
     peak.magnitude = magnitude;
     peak.angle = angle;
 
-    // Set a timer to show the peak vector
     peak.timer = setTimeout(() => {
-      peakVector.style.transform = `translateX(-50%) translateY(-100%) rotate(${peak.angle}deg) scaleY(${peak.magnitude})`;
+      const peakLength = Math.min(peak.magnitude / maxG, 1);
+      peakVector.style.transform = `translateX(-50%) translateY(-100%) rotate(${peak.angle}deg) scaleY(${peakLength})`;
       peakVector.style.display = 'block';
-      peakText.innerText = `Peak: ${(peak.magnitude * maxG).toFixed(2)} G`;
+      peakText.innerText = `${peak.magnitude.toFixed(2)} G`;
 
-      // Set a timer to hide the peak vector after 5 seconds
-      setTimeout(() => {
+      peak.hideTimer = setTimeout(() => {
         peakVector.style.display = 'none';
-        // peakText.innerText = 'Peak: 0.00G';
-        peak.magnitude = 0;  // Reset peak magnitude
+        peak.magnitude = 0;
       }, peak.disappearAfter);
     }, peak.showAfter);
   }
 });
 
-// Handle maxG slider change
 document.getElementById('maxG-slider').addEventListener('input', (event) => {
   maxG = parseFloat(event.target.value);
   document.getElementById('maxG-value').innerText = maxG.toFixed(1);
 });
 
-// Handle disappearAfter slider change
 document.getElementById('disappearAfter-slider').addEventListener('input', (event) => {
-  peak.disappearAfter = parseFloat(event.target.value) * 1000;  // Convert to milliseconds
+  peak.disappearAfter = parseFloat(event.target.value) * 1000;
   document.getElementById('disappearAfter-value').innerText = parseFloat(event.target.value).toFixed(1);
 });
