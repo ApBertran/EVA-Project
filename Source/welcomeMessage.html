@@ -9,15 +9,32 @@
 </head>
 <body onload="loadUp()">
     <div class="mark" data-brand-name>EVA</div>
-    <div class="typewriter" data-brand-greeting>Welcome, Morgane</div>
+    <div class="typewriter" data-brand-greeting>Hello, Morgane</div>
     <div class="boot-bar"></div>
 
+    <!-- fades in over the boot screen in the interface's own background
+         colour, so the handoff has nothing to flash against -->
+    <div class="handoff-veil"></div>
+
     <script type="text/javascript">
+        /* The wordmark resolves over 2.1s, then the greeting over the next
+           2.1s, then the bar. The veil starts once all three have landed. */
+        var HANDOFF_AT_MS = 4900;   // begin fading to the interface colour
+        var VEIL_MS       = 850;    // must match the CSS transition
+
         function loadUp() {
-                setTimeout(swapGUI, 3500);
-            }
+            setTimeout(startHandoff, HANDOFF_AT_MS);
+        }
+
+        function startHandoff() {
+            document.body.classList.add('handoff');
+            /* navigate only once the veil is fully opaque - the interface then
+               paints behind a background that already matches it */
+            setTimeout(swapGUI, VEIL_MS);
+        }
+
         function swapGUI() {
-            // carry ?theme= forward so gui.html paints in the right palette
+            // carry ?theme=, ?mode= and ?brand= forward so gui.html paints correctly
             window.location = "gui.html" + window.location.search;
         }
     </script>

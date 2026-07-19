@@ -16,7 +16,7 @@ const BRANDS = {
   },
   jarvis: {
     name: 'JARVIS',
-    greeting: 'Welcome, Morgane',
+    greeting: 'Hello, Morgane',
     /* Morgane's car: white over beige, so the UI runs warm rather than cool */
     palette: 'amber'
   }

@@ -2615,15 +2615,15 @@ button.pill {
   --silver-dim: #9a8f80;
   --numeral: #f4efe6;
 
-  /* amber takes the accent role teal holds in EVA */
-  --teal: #e0a94f;
-  --teal-dim: #a87a2e;
-  --teal-glow: rgba(224, 169, 79, 0.35);
+  /* Hot Rod red takes the accent role teal holds in EVA */
+  --teal: #e8503a;
+  --teal-dim: #d15a40;
+  --teal-glow: rgba(232, 80, 58, 0.35);
 
-  /* warning shifts to rose so it stays distinct from the amber accent -
-     an orange warning would read as just another accent here */
-  --orange: #f0655a;
-  --orange-glow: rgba(240, 101, 90, 0.4);
+  /* With a red accent the warning moves to amber. A red-on-red warning would
+     not register as an alert at all. */
+  --orange: #e0a94f;
+  --orange-glow: rgba(224, 169, 79, 0.4);
 }
 
 :root[data-brand="jarvis"][data-theme="day"] {
@@ -2637,27 +2637,27 @@ button.pill {
   --silver-dim: #6b6053;
   --numeral: #14100b;
 
-  --teal: #7d5010;
-  --teal-dim: #9a6516;
-  --teal-glow: rgba(125, 80, 16, 0.28);
+  --teal: #8e2410;
+  --teal-dim: #a8331a;
+  --teal-glow: rgba(142, 36, 16, 0.28);
 
-  --orange: #a33a28;
-  --orange-glow: rgba(163, 58, 40, 0.28);
+  --orange: #7d5010;
+  --orange-glow: rgba(125, 80, 16, 0.28);
 }
 
 /* accent-tinted surfaces are defined against teal literals in the base sheet,
    so they need warm equivalents here */
 :root[data-brand="jarvis"] .sidenav button.active {
-  background: linear-gradient(90deg, rgba(224, 169, 79, 0.10), transparent);
+  background: linear-gradient(90deg, rgba(232, 80, 58, 0.12), transparent);
 }
 :root[data-brand="jarvis"] .theme-option.selected,
 :root[data-brand="jarvis"] .ch-chip.on {
-  background: rgba(224, 169, 79, 0.14);
+  background: rgba(232, 80, 58, 0.16);
 }
 :root[data-brand="jarvis"][data-theme="day"] .sidenav button.active {
-  background: linear-gradient(90deg, rgba(125, 80, 16, 0.16), transparent);
+  background: linear-gradient(90deg, rgba(142, 36, 16, 0.16), transparent);
 }
 :root[data-brand="jarvis"][data-theme="day"] .theme-option.selected,
 :root[data-brand="jarvis"][data-theme="day"] .ch-chip.on {
-  background: rgba(125, 80, 16, 0.16);
+  background: rgba(142, 36, 16, 0.16);
 }
