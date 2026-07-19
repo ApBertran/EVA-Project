@@ -22,8 +22,22 @@ const BRANDS = {
   }
 };
 
-/* Change this one line to reflect the car this unit is installed in. */
-const ACTIVE_BRAND = 'jarvis';
+/* The brand is runtime state, not a code constant: this head unit belongs to
+   Alex and is only lent out, so it must fall back to EVA on its own rather
+   than needing an edit to change hands. The main process reads it from
+   ~/.eva-config.json and passes it on the URL, the same way the theme is
+   handed over, so it is set before first paint. Absent config means EVA. */
+function resolveBrand() {
+  try {
+    const p = new URLSearchParams(window.location.search).get('brand');
+    if (p && BRANDS[p]) return p;
+  } catch (e) {
+    /* fall through */
+  }
+  return 'eva';
+}
+
+const ACTIVE_BRAND = resolveBrand();
 
 const BRAND = BRANDS[ACTIVE_BRAND] || BRANDS.eva;
 

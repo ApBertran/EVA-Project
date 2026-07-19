@@ -181,6 +181,15 @@
         </div>
 
         <div class="settings-section">
+          <div class="section-title">Vehicle Profile <span class="badge" id="brand-state">EVA</span></div>
+          <div class="theme-picker">
+            <button class="theme-option" data-brand-opt="eva" onclick="setBrand('eva')">EVA</button>
+            <button class="theme-option" data-brand-opt="jarvis" onclick="setBrand('jarvis')">JARVIS</button>
+          </div>
+          <p class="chart-note">Switches the name and colour scheme for whoever's car this unit is in. Reloads on change. Defaults back to EVA if the setting is ever cleared.</p>
+        </div>
+
+        <div class="settings-section">
           <div class="section-title">Display <span class="badge" id="theme-status">auto</span></div>
           <div class="theme-picker">
             <button class="theme-option selected" data-mode="auto" onclick="setThemeMode('auto')">Auto</button>

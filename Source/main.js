@@ -78,6 +78,7 @@ function settingsPayload() {
     axes: config.axes || analysis.DEFAULT_AXES,
     settings: { ...DEFAULT_SETTINGS, ...(config.settings || {}) },
     theme: config.theme || { mode: 'auto' },
+    branding: config.branding || { brand: 'eva' },
     vehicle: config.vehicle || { tireFactor: 1 }
   };
 }
@@ -474,6 +475,20 @@ io.on('connection', (socket) => {
     socket.emit('bt:volume', { percent: v });
   }));
 
+  socket.on('settings:brand', guard((payload) => {
+    const brand = payload.brand === 'jarvis' ? 'jarvis' : 'eva';
+    config = { ...config, branding: { brand } };
+    saveConfig(config);
+    io.emit('config', settingsPayload());
+    /* the brand is applied before first paint, so it only takes effect on a
+       reload - do that for the user rather than leaving a half-changed UI */
+    for (const win of BrowserWindow.getAllWindows()) {
+      const u = new URL(win.webContents.getURL());
+      u.searchParams.set('brand', brand);
+      win.loadURL(u.toString());
+    }
+  }));
+
   socket.on('settings:theme', guard((payload) => {
     const mode = ['auto', 'day', 'night'].includes(payload.mode) ? payload.mode : 'auto';
     config = { ...config, theme: { mode } };
@@ -589,6 +604,13 @@ startBtPolling();
    is blocked on file:// URLs, and the socket config arrives well after the boot
    screen has already painted. The main process knows the answer synchronously,
    so hand it over in the URL and let themeBoot.js stamp it before first paint. */
+/* Defaults to EVA when unset, so the unit reverts on its own once the config
+   key is cleared - no code change needed to hand it back. */
+function bootBrand() {
+  const b = config.branding && config.branding.brand;
+  return b === 'jarvis' ? 'jarvis' : 'eva';
+}
+
 function bootTheme() {
   const mode = (config.theme && config.theme.mode) || 'auto';
   if (mode === 'day' || mode === 'night') return mode;
@@ -617,7 +639,7 @@ const createWindow = () => {
 
   /* mode rides along so theme.js starts in the right state instead of
      assuming 'auto' and re-resolving to the wrong palette before config lands */
-  const query = { theme, mode };
+  const query = { theme, mode, brand: bootBrand() };
   /* hand over the fix too, so an 'auto' renderer resolves identically to main
      instead of falling back to 7am/7pm and disagreeing */
   const fix = gpsStatus.lastFix;

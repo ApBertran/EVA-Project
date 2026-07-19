@@ -50,7 +50,20 @@ document.getElementById('disappearAfter-slider').addEventListener('input', (even
   persistSetting('peakHold', event.target.value);
 });
 
+function setBrand(brand) {
+  socket.emit('settings:brand', { brand });
+}
+
+function renderBrand(brand) {
+  const badge = document.getElementById('brand-state');
+  if (badge) badge.innerText = brand === 'jarvis' ? 'JARVIS' : 'EVA';
+  document.querySelectorAll('[data-brand-opt]').forEach((b) => {
+    b.classList.toggle('selected', b.dataset.brandOpt === brand);
+  });
+}
+
 socket.on('config', (payload) => {
+  if (payload && payload.branding) renderBrand(payload.branding.brand || 'eva');
   if (!payload || !payload.settings) return;
   const s = payload.settings;
   const apply = (id, valueId, value, digits) => {
