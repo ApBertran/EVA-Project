@@ -2513,29 +2513,34 @@ button.pill {
 .chart.zoomable { cursor: crosshair; touch-action: none; }
 
 /* ---- Music tab, fullscreen ---- */
+/* Sized from viewport HEIGHT, not rem. rem here is anchored to viewport width
+   (html{font-size:1.5625vw}), so a fixed rem layout ignored the vertical budget
+   entirely - the disc clipped off the top and the volume row off the bottom. */
 .music-full {
-  height: calc(100% - 1rem);
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 1rem 12%;
+  gap: 0.8vh;
+  padding: 1.5vh 10%;
+  overflow: hidden;
 }
 
 .music-idle { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.9rem; }
 .music-idle-icon { width: 5rem; height: 5rem; stroke: var(--silver-dim); fill: none; stroke-width: 1.2; opacity: 0.5; }
 
 .album-art {
-  width: 20rem;
-  height: 20rem;
+  width: min(34vh, 20rem);
+  height: min(34vh, 20rem);
+  flex: 0 0 auto;
   border-radius: 50%;
   border: 1px solid var(--line);
   background: radial-gradient(circle at 50% 45%, var(--surface-2) 0%, var(--surface) 70%);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2vh;
   box-shadow: 0 0.6rem 2.4rem rgba(0, 0, 0, 0.35);
 }
 
@@ -2547,10 +2552,11 @@ button.pill {
 .album-art.spinning { animation: spin 4s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.track-title { font-size: 2.4rem; font-weight: 500; }
-.track-artist { font-size: 1.3rem; }
-.transport { gap: 2.4rem; margin-top: 1.4rem; }
-.tbtn { width: 5.4rem; height: 5.4rem; }
-.tbtn.primary { width: 7rem; height: 7rem; }
-.vol-row { max-width: 34rem; margin-top: 1.6rem; }
+.track-title { font-size: min(3.6vh, 2.4rem); font-weight: 500; }
+.track-artist { font-size: min(2vh, 1.3rem); }
+.transport { gap: min(4vh, 2.4rem); margin-top: 1.4vh; flex: 0 0 auto; }
+.tbtn { width: min(8.5vh, 5.4rem); height: min(8.5vh, 5.4rem); }
+.tbtn.primary { width: min(11vh, 7rem); height: min(11vh, 7rem); }
+.vol-row { max-width: 34rem; margin-top: 1.6vh; flex: 0 0 auto; }
 .track-bar, .track-times { max-width: 42rem; }
+.track-bar { margin-top: 1vh; }

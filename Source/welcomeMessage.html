@@ -7,9 +7,76 @@
     <script src="themeBoot.js"></script>
 </head>
 <body onload="loadUp()">
-    <div class="mark">EVA</div>
-    <div class="typewriter">Welcome, Alex</div>
-    <div class="boot-bar"></div>
+    <div class="stage">
+      <!--
+        Traced from IMG_9479 by measuring against a contrast-stretched Sobel
+        edge map of the photo, then checking the fit by rasterising these paths
+        back over the original and correcting the offsets. viewBox is the
+        1000x666 working frame, so every coordinate maps to where that feature
+        actually sits in the shot.
+
+        Left: Alex's silver New Edge, front three-quarter - cowl hood scoop,
+        halo headlights, SHDWPNY plate. Right: his sister's white car, rear-on -
+        wing with LED bar, triple-bar tail lights, fuel door.
+      -->
+      <svg class="scene" viewBox="0 0 1000 666" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <g class="car-a">
+          <path class="s-body" d="M14,332 L13,392 L16,436 L30,452 L96,462 L178,466" />
+          <path class="s-body" d="M178,466 L262,462 L316,450 L330,430" />
+          <path class="s-body" d="M14,332 L22,318 L60,306 L140,296 L232,282 L300,268 L340,258" />
+          <path class="s-body" d="M340,258 L372,262 L392,276 L400,300" />
+          <path class="s-body" d="M22,318 L70,300 L150,282 L250,266 L330,254 L408,244" />
+          <path class="s-body" d="M408,244 L430,252 L440,268 L438,288" />
+          <path class="s-detail" d="M158,318 L198,304 L270,290 L302,290 L308,308 L270,318 L192,330 L160,332 L158,318" />
+          <path class="s-glass" d="M76,330 L130,322 L172,318 L176,356 L128,362 L80,364 L76,330" />
+          <path class="s-glass" d="M28,336 L68,330 L72,364 L32,368 L28,336" />
+          <path class="s-glass" d="M180,320 L260,310 L268,352 L186,362 L180,320" />
+          <path class="s-glass" d="M64,382 L136,376 L138,412 L66,416 L64,382" />
+          <path class="s-glass" d="M300,250 L352,196 L468,190 L486,196" />
+          <path class="s-glass" d="M486,196 L500,236 L438,244" />
+          <path class="s-glass" d="M352,196 L420,188 L500,188 L524,194" />
+          <path class="s-glass" d="M400,300 L470,290 L524,286" />
+          <path class="s-body" d="M352,404 L356,356 L384,330 L414,328 L446,344 L462,382 L464,406" />
+          <circle class="s-halo" cx="200" cy="342" r="12" />
+          <circle class="s-halo" cx="228" cy="340" r="12" />
+          <circle class="s-halo" cx="42" cy="350" r="10" />
+          <circle class="s-halo" cx="58" cy="350" r="10" />
+          <circle class="s-halo" cx="250" cy="340" r="8" />
+          <circle class="s-halo" cx="44" cy="404" r="11" />
+          <circle class="s-halo" cx="210" cy="408" r="10" />
+          <circle class="s-wheel" cx="410" cy="404" r="62" />
+          <circle class="s-wheel" cx="410" cy="404" r="40" />
+        </g>
+        <g class="car-b">
+          <path class="w-body" d="M528,290 L604,280 L724,272 L834,270 L900,272" />
+          <path class="w-body" d="M498,300 L500,394 L504,448 L602,454 L762,450 L882,444" />
+          <path class="w-body" d="M880,444 L936,432 L966,404 L978,360" />
+          <path class="w-body" d="M646,202 L724,184 L844,172 L932,172 L964,182" />
+          <path class="w-body" d="M964,182 L980,250 L982,322 L978,360" />
+          <path class="w-body" d="M528,290 L522,262" />
+          <path class="w-body" d="M524,258 L602,244 L722,232 L842,228 L900,234 L904,252 L832,246 L718,250 L602,262 L526,276 L524,258" />
+          <path class="w-body" d="M566,276 L570,296" />
+          <path class="w-body" d="M850,246 L854,268" />
+          <path class="w-lamp" d="M508,296 L574,300 L572,354 L506,350 L508,296" />
+          <path class="w-lamp" d="M524,298 L522,352" />
+          <path class="w-lamp" d="M548,299 L546,353" />
+          <path class="w-lamp" d="M762,290 L880,284 L884,340 L766,348 L762,290" />
+          <path class="w-lamp" d="M800,288 L804,344" />
+          <path class="w-lamp" d="M842,286 L846,342" />
+          <path class="w-detail" d="M608,300 L690,298 L692,340 L610,342 L608,300" />
+          <path class="w-detail" d="M540,384 L700,378" />
+          <path class="w-detail" d="M516,412 L760,406" />
+          <path class="w-detail" d="M556,424 L720,418" />
+          <circle class="w-detail" cx="902" cy="330" r="20" />
+        </g>
+      </svg>
+
+      <div class="wordmark">
+        <div class="mark">EVA</div>
+        <div class="typewriter">Welcome, Alex</div>
+        <div class="boot-bar"></div>
+      </div>
+    </div>
 
     <script type="text/javascript">
         function loadUp() {
