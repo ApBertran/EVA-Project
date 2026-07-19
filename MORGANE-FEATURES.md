@@ -29,6 +29,41 @@ Useful things to say when requesting:
 
 ## Done
 
+### Boot sequence restyle + red accent — 2026-07-19
+
+Chosen from a live preview rather than described: Terminal monospace,
+Hot Rod red, soft glow, and the greeting reworded to "Hello, Morgane".
+
+- **Fade, not typewriter.** Pure opacity over 2.1s with no movement, and
+  sequential rather than overlapping - the wordmark resolves first, then
+  the greeting begins, so the name lands on its own.
+- **Boot is night-only in both themes.** The dark version simply looks
+  better, so it no longer lightens during the day.
+- **Handoff.** A solid panel in the interface's own background colour
+  fades over the boot screen, and the app navigates only once it is fully
+  opaque - the interface paints behind a background that already matches,
+  so there is no flash between the two. Night and day each fade to their
+  own colour.
+- **Red accent throughout the interface**, replacing amber. AA verified:
+  5.18:1 night, 6.64:1 day.
+
+Worth stealing for EVA: **the handoff.** The boot-to-interface flash
+exists in EVA too, it just has not been noticed. It is brand-agnostic -
+`--handoff-bg` per theme and a veil element - so it would drop straight in.
+
+Two judgement calls, both reversible:
+- Warnings moved red -> amber. A red alert against a red accent stops
+  reading as an alert.
+- `accent-dim` lightened from `#a33422` to `#d15a40`, which failed
+  contrast at 2.82:1.
+
+Underlying fix, which benefits both cars: the stylesheet hardcoded EVA's
+teal and orange in **34 places** no other brand could override - which is
+why the g-force needle and readout stayed gold after the accent changed.
+All of it now flows through `--accent-rgb` / `--warn-rgb`, and the gauge
+got its own `--needle` role so it can follow the accent rather than the
+warning colour.
+
 ### Rename to JARVIS with a warm palette — 2026-07-19
 Her car is white over beige, so the cool teal-on-near-black scheme EVA uses to
 sit against a black interior was replaced with amber on warm neutrals.
@@ -47,6 +82,12 @@ direct sun.
 ## Adopted into EVA
 
 _(features Alex pulls across — record them here so both branches stay in sync)_
+
+**Offered, not yet taken:**
+- **Boot handoff fade** — removes the flash between boot screen and interface.
+  Brand-agnostic, would work in EVA unchanged.
+- **`--accent-rgb` / `--warn-rgb` / `--needle` variables** — already on `main`'s
+  path via this branch; unblocks retinting anything without touching literals.
 
 ---
 

@@ -15,10 +15,22 @@
 
   --teal: #3fd0b0;
   --teal-dim: #2a8c78;
-  --teal-glow: rgba(63, 208, 176, 0.35);
+  --teal-glow: rgba(var(--accent-rgb), 0.35);
 
   --orange: #ff7a33;
-  --orange-glow: rgba(255, 122, 51, 0.4);
+  --orange-glow: rgba(var(--warn-rgb), 0.4);
+
+  /* Accent and warning as raw channels, so translucent tints can be built from
+     them. Without these the sheet hardcodes EVA's teal and orange in ~28
+     places that no other brand can retint. */
+  --accent-rgb: 63, 208, 176;
+  --warn-rgb: 255, 122, 51;
+
+  /* The g-force needle is its own role: EVA draws it in the warning colour,
+     but a brand whose accent IS warm needs to decouple them. */
+  --needle: var(--orange);
+  --needle-tip: #ffb27a;
+  --needle-glow: var(--orange-glow);
 
   --rail: 6.4rem;
   --header: 2.6rem;
@@ -202,7 +214,7 @@ body {
 
 .sidenav button.active {
   color: var(--teal);
-  background: linear-gradient(90deg, rgba(63, 208, 176, 0.09), transparent);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.09), transparent);
 }
 
 .sidenav button.active::before {
@@ -452,7 +464,7 @@ body {
   position: absolute;
   inset: 30%;
   border-radius: 50%;
-  border: 1px dashed rgba(63, 208, 176, 0.22);
+  border: 1px dashed rgba(var(--accent-rgb), 0.22);
 }
 
 .crosshair {
@@ -489,8 +501,8 @@ body {
 }
 
 .vector {
-  background: linear-gradient(to top, var(--orange), #ffb27a);
-  box-shadow: 0 0 1.2rem var(--orange-glow);
+  background: linear-gradient(to top, var(--needle), var(--needle-tip));
+  box-shadow: 0 0 1.2rem var(--needle-glow);
 }
 
 .peak-vector {
@@ -546,8 +558,8 @@ body {
 }
 
 #g-force-text {
-  color: var(--orange);
-  text-shadow: 0 0 1.4rem var(--orange-glow);
+  color: var(--needle);
+  text-shadow: 0 0 1.4rem var(--needle-glow);
 }
 
 #peak-text {
@@ -750,7 +762,7 @@ body {
 .primary-btn {
   border-color: var(--teal-dim);
   color: var(--teal);
-  background: rgba(63, 208, 176, 0.1);
+  background: rgba(var(--accent-rgb), 0.1);
 }
 
 .primary-btn.wide {
@@ -762,7 +774,7 @@ body {
 .stop-btn {
   border-color: #7a3326;
   color: var(--orange);
-  background: rgba(255, 122, 51, 0.1);
+  background: rgba(var(--warn-rgb), 0.1);
 }
 
 .rec-dot {
@@ -789,7 +801,7 @@ body {
   margin-bottom: 1rem;
   border-radius: 0.6rem;
   border: 1px solid #7a3326;
-  background: linear-gradient(90deg, rgba(255, 122, 51, 0.14), transparent);
+  background: linear-gradient(90deg, rgba(var(--warn-rgb), 0.14), transparent);
 }
 
 .rec-banner.active {
@@ -993,7 +1005,7 @@ textarea.text-input {
 .check-row input {
   width: 1.1rem;
   height: 1.1rem;
-  accent-color: #3fd0b0;
+  accent-color: var(--teal);
 }
 
 .thumb-picker {
@@ -1031,7 +1043,7 @@ textarea.text-input {
 
 .thumb-option.selected {
   border-color: var(--teal);
-  background: rgba(63, 208, 176, 0.08);
+  background: rgba(var(--accent-rgb), 0.08);
   color: var(--teal);
 }
 
@@ -1057,7 +1069,7 @@ textarea.text-input {
 .road-chip.selected {
   border-color: var(--teal);
   color: var(--teal);
-  background: rgba(63, 208, 176, 0.1);
+  background: rgba(var(--accent-rgb), 0.1);
 }
 
 .modal-buttons {
@@ -1157,7 +1169,7 @@ textarea.text-input {
 .osk-key.accent {
   border-color: var(--teal-dim);
   color: var(--teal);
-  background: rgba(63, 208, 176, 0.12);
+  background: rgba(var(--accent-rgb), 0.12);
 }
 
 .osk-key.active {
@@ -1181,7 +1193,7 @@ body.osk-open .settings-card {
 
 .log-card.entry.selected {
   border-color: var(--teal);
-  background: rgba(63, 208, 176, 0.06);
+  background: rgba(var(--accent-rgb), 0.06);
 }
 
 .log-card .thumb {
@@ -1223,7 +1235,7 @@ body.osk-open .settings-card {
 .card-actions button.view {
   border-color: var(--teal-dim);
   color: var(--teal);
-  background: rgba(63, 208, 176, 0.1);
+  background: rgba(var(--accent-rgb), 0.1);
 }
 
 .detail-hero {
@@ -1322,7 +1334,7 @@ body.osk-open .settings-card {
 
 .folder-tile.selected {
   border-color: var(--teal);
-  background: rgba(63, 208, 176, 0.06);
+  background: rgba(var(--accent-rgb), 0.06);
 }
 
 .folder-open {
@@ -1454,7 +1466,7 @@ body.osk-open .settings-card {
 .dtab.active {
   border-color: var(--teal);
   color: var(--teal);
-  background: rgba(63, 208, 176, 0.1);
+  background: rgba(var(--accent-rgb), 0.1);
 }
 
 .stat-row {
@@ -1531,11 +1543,11 @@ body.osk-open .settings-card {
 .ch-chip.on {
   border-color: var(--teal);
   color: var(--teal);
-  background: rgba(63, 208, 176, 0.14);
+  background: rgba(var(--accent-rgb), 0.14);
 }
 
 :root[data-theme="day"] .ch-chip.on {
-  background: rgba(10, 110, 92, 0.16);
+  background: rgba(var(--accent-rgb), 0.16);
 }
 
 .ch-legend {
@@ -1679,7 +1691,7 @@ body.osk-open .settings-card {
   margin-bottom: 1rem;
   border-radius: 0.5rem;
   border: 1px solid var(--teal-dim);
-  background: rgba(63, 208, 176, 0.08);
+  background: rgba(var(--accent-rgb), 0.08);
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--silver);
@@ -1693,7 +1705,7 @@ body.osk-open .settings-card {
 
 .calib-warning.error {
   border-color: #7a3326;
-  background: rgba(255, 122, 51, 0.08);
+  background: rgba(var(--warn-rgb), 0.08);
 }
 
 .calib-warning.error b {
@@ -1767,7 +1779,7 @@ body.osk-open .settings-card {
   display: block;
   height: 100%;
   width: 0;
-  background: linear-gradient(90deg, var(--orange), #ffb27a);
+  background: linear-gradient(90deg, var(--needle), var(--needle-tip));
   animation-name: fillbar;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
@@ -1980,7 +1992,7 @@ body.osk-open .settings-card {
   padding: 1rem;
   border-radius: 0.5rem;
   border: 1px solid var(--teal-dim);
-  background: rgba(63, 208, 176, 0.08);
+  background: rgba(var(--accent-rgb), 0.08);
   font-size: 1rem;
   line-height: 1.6;
   color: var(--numeral);
@@ -2014,13 +2026,13 @@ button.pill {
 
 .obd-status.ready {
   border-color: var(--teal-dim);
-  background: rgba(63, 208, 176, 0.08);
+  background: rgba(var(--accent-rgb), 0.08);
 }
 
 .obd-status.error,
 .obd-status.unavailable {
   border-color: #7a3326;
-  background: rgba(255, 122, 51, 0.07);
+  background: rgba(var(--warn-rgb), 0.07);
 }
 
 .obd-state {
@@ -2122,7 +2134,7 @@ button.pill {
   padding: 1.2rem;
   border-radius: 0.5rem;
   border: 1px solid var(--teal-dim);
-  background: rgba(63, 208, 176, 0.08);
+  background: rgba(var(--accent-rgb), 0.08);
   font-size: 1.1rem;
   color: var(--teal);
   text-align: center;
@@ -2164,7 +2176,7 @@ button.pill {
 .pid-chip.selected {
   border-color: var(--teal);
   color: var(--teal);
-  background: rgba(63, 208, 176, 0.1);
+  background: rgba(var(--accent-rgb), 0.1);
 }
 
 .pid-budget {
@@ -2202,11 +2214,11 @@ button.pill {
   font-size: 1.05rem;
   line-height: 1.5;
   border: 1px solid var(--teal-dim);
-  background: rgba(63, 208, 176, 0.08);
+  background: rgba(var(--accent-rgb), 0.08);
   color: var(--silver);
 }
 
-.verdict.warn { border-color: #7a3326; background: rgba(255, 122, 51, 0.1); }
+.verdict.warn { border-color: #7a3326; background: rgba(var(--warn-rgb), 0.1); }
 .verdict.watch { border-color: var(--line); background: var(--surface-2); }
 
 .trend { display: flex; align-items: flex-end; gap: 0.4rem; height: 8rem; }
@@ -2225,6 +2237,8 @@ button.pill {
 .trend-bar em { font-style: normal; font-size: 0.65rem; color: var(--silver-dim); }
 
 :root[data-theme="day"] {
+  --accent-rgb: 10, 110, 92;
+  --warn-rgb: 152, 58, 11;
   --bg: #d3d9db;
   --surface: #ffffff;
   --surface-2: #e7ecee;
@@ -2237,7 +2251,7 @@ button.pill {
 
   --teal: #0a6e5c;
   --teal-dim: #0d8f78;
-  --teal-glow: rgba(10, 110, 92, 0.28);
+  --teal-glow: rgba(var(--accent-rgb), 0.28);
 
   --orange: #983a0b;
   --orange-glow: rgba(152, 58, 11, 0.28);
@@ -2249,7 +2263,7 @@ button.pill {
 }
 
 :root[data-theme="day"] .gauge::after {
-  border-color: rgba(10, 110, 92, 0.3);
+  border-color: rgba(var(--accent-rgb), 0.3);
 }
 
 :root[data-theme="day"] .statusbar {
@@ -2257,11 +2271,11 @@ button.pill {
 }
 
 :root[data-theme="day"] .sidenav button.active {
-  background: linear-gradient(90deg, rgba(10, 110, 92, 0.14), transparent);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.14), transparent);
 }
 
 :root[data-theme="day"] .primary-btn {
-  background: rgba(10, 110, 92, 0.12);
+  background: rgba(var(--accent-rgb), 0.12);
 }
 
 :root[data-theme="day"] .danger-btn,
@@ -2298,7 +2312,7 @@ button.pill {
 }
 
 :root[data-theme="day"] .sidenav button.active {
-  background: linear-gradient(90deg, rgba(10, 110, 92, 0.18), transparent);
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.18), transparent);
 }
 
 :root[data-theme="day"] .slider::-webkit-slider-thumb,
@@ -2325,7 +2339,7 @@ button.pill {
 :root[data-theme="day"] .verdict,
 :root[data-theme="day"] .calib-warning,
 :root[data-theme="day"] .export-ok {
-  background: rgba(10, 110, 92, 0.14);
+  background: rgba(var(--accent-rgb), 0.14);
   border-color: var(--teal);
 }
 
@@ -2348,11 +2362,11 @@ button.pill {
 .theme-option.selected {
   border-color: var(--teal);
   color: var(--teal);
-  background: rgba(63, 208, 176, 0.12);
+  background: rgba(var(--accent-rgb), 0.12);
 }
 
 :root[data-theme="day"] .theme-option.selected {
-  background: rgba(10, 110, 92, 0.18);
+  background: rgba(var(--accent-rgb), 0.18);
   border-color: var(--teal);
 }
 
@@ -2462,7 +2476,7 @@ button.pill {
   height: 5.6rem;
   border-color: var(--teal);
   color: var(--teal);
-  background: rgba(63, 208, 176, 0.12);
+  background: rgba(var(--accent-rgb), 0.12);
 }
 
 .vol-row {
@@ -2624,6 +2638,14 @@ button.pill {
      not register as an alert at all. */
   --orange: #e0a94f;
   --orange-glow: rgba(224, 169, 79, 0.4);
+
+  --accent-rgb: 232, 80, 58;
+  --warn-rgb: 224, 169, 79;
+
+  /* the g-force needle follows the accent here, not the warning colour */
+  --needle: #e8503a;
+  --needle-tip: #ff9c86;
+  --needle-glow: rgba(232, 80, 58, 0.45);
 }
 
 :root[data-brand="jarvis"][data-theme="day"] {
@@ -2643,6 +2665,13 @@ button.pill {
 
   --orange: #7d5010;
   --orange-glow: rgba(125, 80, 16, 0.28);
+
+  --accent-rgb: 142, 36, 16;
+  --warn-rgb: 125, 80, 16;
+
+  --needle: #8e2410;
+  --needle-tip: #c0503a;
+  --needle-glow: rgba(142, 36, 16, 0.35);
 }
 
 /* accent-tinted surfaces are defined against teal literals in the base sheet,
