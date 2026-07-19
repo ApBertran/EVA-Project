@@ -4,36 +4,53 @@
     <link rel="stylesheet" href="styleEntry.css">
 </head>
 <body>
-    <div id="container">  
-        <ul id="keyboard">   
-            <li class="letter" onclick="enterCode('1')">1</li>  
-            <li class="letter" onclick="enterCode('2')">2</li>  
-            <li class="letter" onclick="enterCode('3')">3</li>  
-            <li class="letter clearl" onclick="enterCode('4')">4</li>  
-            <li class="letter" onclick="enterCode('5')">5</li>  
-            <li class="letter" onclick="enterCode('6')">6</li> 
-          
-            <li class="letter clearl" onclick="enterCode('7')">7</li>
-            <li class="letter " onclick="enterCode('8')">8</li>  
-            <li class="letter" onclick="enterCode('9')">9</li>  
-            <li class="letter clearl lastitem" onclick="enterCode('0')">0</li> 
-        </ul>  
+    <div class="prompt">Enter Code</div>
+
+    <div class="dots" id="pswd">
+        <i></i><i></i><i></i><i></i>
     </div>
-    <h1><span id="pswd"></span></h1>
+
+    <div id="container">
+        <ul id="keyboard">
+            <li class="letter" onclick="enterCode('1')">1</li>
+            <li class="letter" onclick="enterCode('2')">2</li>
+            <li class="letter" onclick="enterCode('3')">3</li>
+            <li class="letter" onclick="enterCode('4')">4</li>
+            <li class="letter" onclick="enterCode('5')">5</li>
+            <li class="letter" onclick="enterCode('6')">6</li>
+            <li class="letter" onclick="enterCode('7')">7</li>
+            <li class="letter" onclick="enterCode('8')">8</li>
+            <li class="letter" onclick="enterCode('9')">9</li>
+            <li class="letter lastitem" onclick="enterCode('0')">0</li>
+        </ul>
+    </div>
 
     <script type="text/javascript">
         var codeEnter = "";
         var confirmPassword = "1111";
+
+        function paintDots() {
+            var dots = document.querySelectorAll("#pswd i");
+            for (var i = 0; i < dots.length; i++) {
+                dots[i].className = i < codeEnter.length ? "on" : "";
+            }
+        }
+
         function enterCode(character) {
             codeEnter += character;
+            paintDots();
             if (codeEnter.length == 4) {
                 if (codeEnter == confirmPassword) {
-                    window.location="welcomeMessage.html";
+                    window.location = "welcomeMessage.html";
                 } else {
-                    codeEnter = "";
+                    document.body.className = "error";
+                    setTimeout(function () {
+                        document.body.className = "";
+                        codeEnter = "";
+                        paintDots();
+                    }, 400);
                 }
             }
-            document.getElementById("pswd").innerHTML = codeEnter;
         }
     </script>
 </body>
