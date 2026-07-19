@@ -475,6 +475,16 @@ socket.on('logs:error', (payload) => {
   toast.innerText = payload.message;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 3500);
+
+  /* The toast alone left the detail pane spinning on "Analysing..." forever
+     when analysis threw. Surface the failure where the user is looking. */
+  const body = document.getElementById('detail-body');
+  if (body && body.querySelector('.detail-loading')) {
+    body.innerHTML =
+      '<div class="detail-loading">Analysis failed.<br><span class="detail-error">' +
+      String(payload.message || 'Unknown error').replace(/[<>&]/g, '') +
+      '</span></div>';
+  }
 });
 
 document.addEventListener('DOMContentLoaded', () => {

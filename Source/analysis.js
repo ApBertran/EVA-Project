@@ -243,6 +243,14 @@ async function analyze(dir, axesConfig, options) {
     });
   }
 
+  /* Must be computed before the summary literal below, which reads both.
+     Declaring them after it is a temporal dead zone error, not a hoisting
+     convenience: "cannot access 'obd' before initialization". */
+  const obd = obdRows.length
+    ? analyseObd(obdRows, { tireFactor: (axesConfig && axesConfig.tireFactor) || (options && options.tireFactor) || 1 })
+    : null;
+  const tireCal = obdRows.length && fixes.length ? calibrateTireFactor(obdRows, fixes) : null;
+
   const summary = {
     version: 1,
     computedAt: Date.now(),
@@ -279,11 +287,6 @@ async function analyze(dir, axesConfig, options) {
     obd: obd ? { channels: obd.channels, derived: obd.derived, gears: obd.gears, health: obd.health } : null,
     tireCal
   };
-
-  const obd = obdRows.length
-    ? analyseObd(obdRows, { tireFactor: (axesConfig && axesConfig.tireFactor) || (options && options.tireFactor) || 1 })
-    : null;
-  const tireCal = obdRows.length && fixes.length ? calibrateTireFactor(obdRows, fixes) : null;
 
   const signature = fixes.length >= 2 ? traceSvg(fixes) : sparklineSvg(series);
 
