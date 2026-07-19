@@ -15,68 +15,14 @@ body {
   background: radial-gradient(ellipse at 50% 45%, #14181a 0%, #0b0d0e 65%);
   color: #e9edee;
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stage {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Full-bleed scene traced from the photo. 'slice' fills the 16:9 panel from a
-   3:2 source, cropping a little top and bottom rather than letterboxing. */
-.scene {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.scene g { fill: none; stroke: #3fd0b0; stroke-linecap: round; stroke-linejoin: round; }
-
-/* Weighted so the eye reads silhouette first, then detail - a flat weight
-   turns the whole thing into visual noise at a glance. */
-.scene .s-body,  .scene .w-body  { stroke-width: 3.2; opacity: 0.92; }
-.scene .s-glass, .scene .w-glass { stroke-width: 2.2; opacity: 0.62; }
-.scene .s-wheel                  { stroke-width: 2.6; opacity: 0.72; }
-.scene .w-lamp                   { stroke-width: 2.4; opacity: 0.78; }
-.scene .s-detail, .scene .w-detail { stroke-width: 1.6; opacity: 0.42; }
-.scene .s-halo { stroke-width: 2.4; opacity: 0.85; }
-
-/* Draw both cars on: the silver car leads from the left, the white car follows,
-   so the frame builds toward the centre where the wordmark lands. */
-.scene path, .scene circle {
-  stroke-dasharray: 3000;
-  stroke-dashoffset: 3000;
-  animation: draw 2.2s ease-out forwards;
-}
-
-.car-a path, .car-a circle { animation-delay: 0.15s; }
-.car-b path, .car-b circle { animation-delay: 0.55s; }
-
-@keyframes draw { to { stroke-dashoffset: 0; } }
-
-/* The wordmark sits in the pocket of empty frame the two cars leave between
-   them. The radial wash keeps it legible where strokes pass underneath. */
-.wordmark {
-  position: relative;
-  z-index: 2;
-  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2vh;
-  padding: 4vh 7vw;
-  background: radial-gradient(ellipse at 50% 50%, rgba(11, 13, 14, 0.92) 0%, rgba(11, 13, 14, 0.72) 45%, rgba(11, 13, 14, 0) 72%);
+  justify-content: center;
+  gap: 2.4vw;
 }
 
 .mark {
-  font-size: 8.5vw;
+  font-size: 12vw;
   font-weight: 200;
   line-height: 1;
   letter-spacing: 0.4em;
@@ -88,7 +34,7 @@ body {
 }
 
 .typewriter {
-  font-size: 2vw;
+  font-size: 2.5vw;
   font-weight: 300;
   letter-spacing: 0.2em;
   white-space: nowrap;
@@ -109,7 +55,7 @@ body {
 }
 
 .boot-bar {
-  width: 20vw;
+  width: 26vw;
   height: 0.22vh;
   min-height: 2px;
   border-radius: 2px;
@@ -155,10 +101,6 @@ body {
   color: #0b1013;
 }
 
-:root[data-theme="day"] .wordmark {
-  background: radial-gradient(ellipse at 50% 50%, rgba(238, 241, 242, 0.94) 0%, rgba(238, 241, 242, 0.75) 45%, rgba(238, 241, 242, 0) 72%);
-}
-
 :root[data-theme="day"] .mark {
   color: #0a6e5c;
   text-shadow: 0 0 4vw rgba(10, 110, 92, 0.25);
@@ -171,8 +113,6 @@ body {
 :root[data-theme="day"] .typewriter::after {
   background: #0a6e5c;
 }
-
-:root[data-theme="day"] .scene g { stroke: #0a6e5c; }
 
 :root[data-theme="day"] .boot-bar {
   background: #b6bfc2;
