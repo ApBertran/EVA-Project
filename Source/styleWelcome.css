@@ -192,13 +192,13 @@ body {
 }
 
 /* ---- handoff ----
-   A solid panel the exact colour of the interface's empty space fades over
+   A solid panel the exact color of the interface's empty space fades over
    the boot screen, and only once it is fully opaque does the app navigate.
    The interface therefore appears behind a background that already matches,
    so there is no flash between the two.
 
    It is a separate element rather than a transition on body: the boot screen
-   uses a gradient background, and gradients cannot animate to a flat colour. */
+   uses a gradient background, and gradients cannot animate to a flat color. */
 :root { --handoff-bg: #0b0d0e; }
 :root[data-theme="day"] { --handoff-bg: #d3d9db; }
 :root[data-brand="jarvis"] { --handoff-bg: #100e0b; }

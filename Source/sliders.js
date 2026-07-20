@@ -50,7 +50,7 @@ bindChannel(rSlider, rOutput, 'r');
 bindChannel(gSlider, gOutput, 'g');
 bindChannel(bSlider, bOutput, 'b');
 
-/* Reflect whatever the strip is actually set to, including the colour restored
+/* Reflect whatever the strip is actually set to, including the color restored
    from config at boot - the sliders should never disagree with the hardware. */
 socket.on('lights:state', (state) => {
   if (!state) return;

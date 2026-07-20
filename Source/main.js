@@ -31,6 +31,9 @@ const sourceDir = __dirname;
 expressApp.use(express.static(sourceDir));
 
 const CONFIG_PATH = path.join(os.homedir(), '.eva-config.json');
+/* Games state lives apart from settings: it grows without bound as scores
+   accumulate, and losing it should never risk the servo/damping config. */
+const GAMES_PATH = path.join(os.homedir(), '.eva-games.json');
 
 function loadConfig() {
   try {
@@ -71,6 +74,29 @@ function saveConfig(config) {
     console.error('Could not persist config:', e.message);
   }
 }
+
+function loadGames() {
+  try {
+    return JSON.parse(fs.readFileSync(GAMES_PATH, 'utf8'));
+  } catch (e) {
+    return { profiles: [], activeProfile: null, scores: {}, saves: {} };
+  }
+}
+
+function saveGames(data) {
+  const tmp = `${GAMES_PATH}.tmp`;
+  try {
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2));
+    const fd = fs.openSync(tmp, 'r+');
+    fs.fsyncSync(fd);
+    fs.closeSync(fd);
+    fs.renameSync(tmp, GAMES_PATH);
+  } catch (e) {
+    console.error('Could not persist games data:', e.message);
+  }
+}
+
+let gamesData = loadGames();
 
 function settingsPayload() {
   return {
@@ -189,7 +215,7 @@ function startLights() {
         if (msg.event === 'ready') {
           lightsBackend = msg.backend;
           console.log('Lights backend:', msg.backend || 'none');
-          /* restore the colour the car was left on */
+          /* restore the color the car was left on */
           sendLights(lightsState());
         }
         if (msg.event === 'error') console.error('Lights:', msg.message);
@@ -527,6 +553,29 @@ io.on('connection', (socket) => {
     socket.emit('bt:volume', { percent: v });
   }));
 
+  socket.on('games:load', guard(() => {
+    socket.emit('games:data', gamesData);
+  }));
+
+  socket.on('games:save', guard((payload) => {
+    if (!payload || typeof payload !== 'object') return;
+    gamesData = payload;
+    saveGames(gamesData);
+    /* broadcast so a second screen or a reopened portal stays in step */
+    io.emit('games:data', gamesData);
+  }));
+
+  socket.on('games:words', guard(() => {
+    const read = (f) => {
+      try {
+        return fs.readFileSync(path.join(sourceDir, f), 'utf8').split('\n').filter(Boolean);
+      } catch (e) {
+        return [];
+      }
+    };
+    socket.emit('games:words', { answers: read('words-answers.txt'), valid: read('words-valid.txt') });
+  }));
+
   socket.on('lights:set', guard((payload) => {
     const next = { ...lightsState() };
     for (const key of ['r', 'g', 'b', 'brightness']) {
@@ -536,7 +585,7 @@ io.on('connection', (socket) => {
       }
     }
     sendLights(next);
-    /* persisted immediately so the strip comes back to the same colour after
+    /* persisted immediately so the strip comes back to the same color after
        an ignition cycle rather than defaulting to off */
     config = { ...config, lights: next };
     saveConfig(config);
@@ -562,8 +611,9 @@ io.on('connection', (socket) => {
 
   socket.on('settings:brand', guard((payload) => {
     const brand = payload.brand === 'jarvis' ? 'jarvis' : 'eva';
-    config = { ...config, branding: { brand } };
+    config = { ...config, branding: { ...(config.branding || {}), brand } };
     saveConfig(config);
+    applyBluetoothName();
     io.emit('config', settingsPayload());
     /* the brand is applied before first paint, so it only takes effect on a
        reload - do that for the user rather than leaving a half-changed UI */
@@ -703,6 +753,13 @@ function bootAccent() {
   return a === 'purple' || a === 'green' ? a : 'default';
 }
 
+/* Keep the Bluetooth adapter name in step with the brand, so the phone's
+   pairing list shows the right car. */
+function applyBluetoothName() {
+  const label = bootBrand() === 'jarvis' ? 'JARVIS Head Unit' : 'EVA Head Unit';
+  bluetooth.setAdapterName(label).catch(() => {});
+}
+
 function bootTheme() {
   const mode = (config.theme && config.theme.mode) || 'auto';
   if (mode === 'day' || mode === 'night') return mode;
@@ -747,6 +804,7 @@ app.whenReady().then(() => {
   createWindow();
   setTimeout(startImuLogger, IMU_START_DELAY_MS);
   setTimeout(startLights, IMU_START_DELAY_MS + 400);
+  setTimeout(applyBluetoothName, 1500);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

@@ -8,7 +8,7 @@ Reads one JSON object per line on stdin: {"r":0-255,"g":0-255,"b":0-255}
 and optionally {"brightness":0-100}. Writes status lines as JSON on stdout.
 
 The strip is a 12V common-anode analog RGB (Govee H6190, 18W / 1.5A). The Pi
-cannot drive it directly - each colour switches through a logic-level N-channel
+cannot drive it directly - each color switches through a logic-level N-channel
 MOSFET, with the 12V coming from its own supply. See LED-WIRING.md.
 
 pigpio is preferred over gpiozero's default backend because its PWM is

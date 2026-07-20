@@ -277,6 +277,17 @@ async function setVolume(percent) {
   return clamped;
 }
 
+/* The adapter alias is what the phone sees in its Bluetooth list, so it has to
+   follow the brand - otherwise Morgane pairs with something called EVA. */
+async function setAdapterName(name) {
+  try {
+    await setProp(ADAPTER, IFACE_ADAPTER, 'Alias', 's', name);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 async function available() {
   try {
     const powered = await getProp(ADAPTER, IFACE_ADAPTER, 'Powered');
@@ -292,6 +303,7 @@ module.exports = {
   setDiscovery,
   isDiscovering,
   setDiscoverable,
+  setAdapterName,
   discoverableState,
   pair,
   connect,

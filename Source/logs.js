@@ -21,7 +21,7 @@ const THUMBS = {
   },
   track: {
     label: 'Track Day',
-    /* var(--numeral) rather than a fixed colour: the outline is near-white,
+    /* var(--numeral) rather than a fixed color: the outline is near-white,
        which vanished against the light day-mode thumbnail background. This
        flips to near-black in day and near-white at night. */
     accent: 'var(--numeral)',
@@ -304,7 +304,7 @@ function renderDetail(payload) {
 
     <div class="dpane" id="dpane-map" style="display:none">
       <canvas class="chart tall" id="chart-track"></canvas>
-      <p class="chart-note">${hasGps ? 'Route coloured by combined g-force. Teal dot marks the start.' : 'No location source was recorded for this drive. Connect GPS in Settings to build heat maps.'}</p>
+      <p class="chart-note">${hasGps ? 'Route colored by combined g-force. Teal dot marks the start.' : 'No location source was recorded for this drive. Connect GPS in Settings to build heat maps.'}</p>
     </div>`;
 
   requestAnimationFrame(() => {

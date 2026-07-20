@@ -43,7 +43,7 @@ const BRAND = BRANDS[ACTIVE_BRAND] || BRANDS.eva;
 
 (function applyBrand() {
   document.documentElement.setAttribute('data-brand', ACTIVE_BRAND);
-  /* accent is independent of brand - it retints the highlight colour only */
+  /* accent is independent of brand - it retints the highlight color only */
   try {
     const a = new URLSearchParams(window.location.search).get('accent');
     if (a === 'purple' || a === 'green') document.documentElement.setAttribute('data-accent', a);

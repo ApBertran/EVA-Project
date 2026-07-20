@@ -26,7 +26,7 @@
   --accent-rgb: 63, 208, 176;
   --warn-rgb: 255, 122, 51;
 
-  /* The g-force needle is its own role: EVA draws it in the warning colour,
+  /* The g-force needle is its own role: EVA draws it in the warning color,
      but a brand whose accent IS warm needs to decouple them. */
   --needle: var(--orange);
   --needle-tip: #ffb27a;
@@ -2658,7 +2658,7 @@ button.pill {
   --accent-rgb: 232, 80, 58;
   --warn-rgb: 224, 169, 79;
 
-  /* the g-force needle follows the accent here, not the warning colour */
+  /* the g-force needle follows the accent here, not the warning color */
   --needle: #e8503a;
   --needle-tip: #ff9c86;
   --needle-glow: rgba(232, 80, 58, 0.45);
@@ -2710,7 +2710,7 @@ button.pill {
 /* ============================================================
    Accent themes — selectable in Settings > Display.
    Layered ON TOP of the brand palette: the brand decides the base
-   surfaces, the accent decides the highlight colour. Absent or
+   surfaces, the accent decides the highlight color. Absent or
    unrecognised resolves to the brand's own accent.
    ============================================================ */
 :root[data-accent="purple"] {
@@ -2752,3 +2752,306 @@ button.pill {
   --needle-tip: #3fa06f;
   --needle-glow: rgba(19, 107, 66, 0.35);
 }
+
+/* ==================== GAMES ==================== */
+/* The pill is an action, not a status dot, so it carries a label and a border
+   the indicator pills do not. */
+.pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem 0.35rem 0.7rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--silver);
+  font-family: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.pill-btn svg { width: 1.6rem; height: 1.6rem; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; }
+.pill-btn:active { border-color: var(--teal); color: var(--teal); }
+
+/* Height follows the content instead of being forced, and the card only
+   scrolls once it genuinely overflows - the fixed min-height reserved a
+   scrollbar and a dead gap under the grid even with six cards. */
+.games-card {
+  width: min(92vw, 78rem);
+  max-height: 94vh;
+  overflow-y: auto;
+  padding: 1vh 1.8rem 1.2vh;
+}
+
+#games-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.games-blocked { display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1rem; padding: 6rem 2rem; text-align: center; }
+.gb-title { font-size: 1.8rem; color: var(--numeral); }
+.gb-sub { font-size: 1rem; color: var(--silver-dim); max-width: 34rem; }
+
+.portal { display: flex; flex-direction: column; align-items: center; gap: 1.6rem; padding: 2rem 0; }
+.portal-who { font-size: 1.2rem; color: var(--silver-dim); display: flex; align-items: center; gap: 0.9rem; }
+.portal-who b { color: var(--numeral); }
+.portal-choices { display: flex; gap: 1.6rem; }
+.portal-card {
+  width: 20rem; padding: 2.4rem 1.4rem; border-radius: 0.9rem;
+  border: 1px solid var(--line); background: var(--surface-2);
+  display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+  color: var(--silver); font-family: inherit; cursor: pointer; touch-action: manipulation;
+}
+.portal-card:active { border-color: var(--teal); }
+.portal-card svg { width: 4.4rem; height: 4.4rem; stroke: var(--teal); fill: none; stroke-width: 1.4; stroke-linecap: round; }
+.portal-card span { font-size: 1.5rem; color: var(--numeral); }
+.portal-card em { font-size: 0.9rem; color: var(--silver-dim); font-style: normal; }
+
+/* Compact: this bar sits above every game, so its height comes straight out of
+   the playfield's budget. */
+.games-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding-bottom: 0.8vh; border-bottom: 1px solid var(--line-soft); margin-bottom: 1vh; flex: 0 0 auto; }
+.games-mode { font-size: 1.1rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--teal); }
+.game-status { font-size: 1rem; color: var(--silver-dim); }
+
+.game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; }
+.game-card { padding: 1.2rem; border-radius: 0.7rem; border: 1px solid var(--line);
+  background: var(--surface-2); color: var(--silver); font-family: inherit;
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem; cursor: pointer; }
+.game-card:active { border-color: var(--teal); }
+.game-art svg { width: 3.4rem; height: 3.4rem; stroke: var(--teal); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.game-name { font-size: 1.2rem; color: var(--numeral); }
+.game-meta { font-size: 0.85rem; color: var(--silver-dim); text-align: center; }
+.resume { color: var(--teal); }
+
+.game-stage { display: flex; align-items: center; justify-content: center; padding: 0.5vh 0; width: 100%; }
+
+/* --- drag tree --- */
+/* The whole stage is the button. On a reaction game, having to hit a small
+   target is itself a reaction test - and not the one being measured. */
+.tree-wrap {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1.4vh; cursor: pointer;
+  width: 100%; min-height: 62vh;
+  user-select: none;
+}
+/* F1 gantry: five columns of two lamps, sized to fill the stage width so it
+   reads from the passenger seat. */
+.f1-gantry {
+  display: flex; gap: min(2.6rem, 4vw); align-items: center; justify-content: center;
+  padding: min(2rem, 3vh) min(2.6rem, 3vw);
+  background: #0a0a0b; border: 1px solid var(--line); border-radius: 1rem;
+}
+.f1-col { display: flex; flex-direction: column; gap: min(1.2rem, 2vh); }
+.f1-lamp {
+  width: min(5.2rem, 9.5vh); height: min(5.2rem, 9.5vh);
+  border-radius: 50%;
+  border: 2px solid #24242a;
+  background: #17171a;
+  transition: background 0.04s, box-shadow 0.04s;
+}
+.f1-lamp.on {
+  background: #e01b1b;
+  border-color: #ff5a4a;
+  box-shadow: 0 0 2.4rem rgba(224,27,27,.85), inset 0 0 1rem rgba(255,140,120,.5);
+}
+.tree-msg { font-size: min(2.6rem, 5.5vh); color: var(--numeral); }
+.tree-sub { font-size: min(0.95rem, 2.2vh); color: var(--silver-dim); }
+.duel-result { font-size: min(2.4rem, 5vh); color: var(--teal); }
+.duel-times { display: flex; gap: 2.4rem; font-size: min(1.3rem, 2.8vh); color: var(--silver); }
+
+/* --- 2048 --- */
+.g2048-wrap { display: flex; flex-direction: column; align-items: center; gap: 1.2vh; }
+.g2048-scores { display: flex; gap: 1.6rem; align-items: center; font-size: min(1rem, 2.2vh); color: var(--silver-dim); }
+.g2048-scores b { color: var(--numeral); font-size: 1.3rem; }
+/* vh-capped like Wordle - the fixed rem grid overflowed the modal vertically */
+.g2048 {
+  display: grid;
+  grid-template: repeat(4, min(5.4rem, 9.4vh)) / repeat(4, min(5.4rem, 9.4vh));
+  gap: min(0.55rem, 1.1vh);
+  padding: min(0.55rem, 1.1vh);
+  background: var(--surface-2); border-radius: 0.6rem; touch-action: none;
+}
+.t2048 { display: flex; align-items: center; justify-content: center; border-radius: 0.4rem;
+  background: rgba(255,255,255,0.04); font-size: min(1.7rem, 3.6vh); color: var(--numeral); }
+.t2048.v2,.t2048.v4 { background: rgba(var(--accent-rgb), .16); }
+.t2048.v8,.t2048.v16 { background: rgba(var(--accent-rgb), .3); }
+.t2048.v32,.t2048.v64 { background: rgba(var(--accent-rgb), .48); }
+.t2048.v128,.t2048.v256,.t2048.v512 { background: rgba(var(--warn-rgb), .5); }
+.t2048.v1024,.t2048.v2048 { background: rgba(var(--warn-rgb), .78); color: #fff; }
+
+/* --- wordle --- */
+/* Sized from viewport HEIGHT with rem as a ceiling. rem here is anchored to
+   viewport WIDTH (html{font-size:1.5625vw}), so a pure rem layout ignored the
+   vertical budget: six rows plus three keyboard rows overflowed the modal and
+   forced a scroll. */
+.w-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.6vh; }
+.w-board { display: flex; flex-direction: column; gap: min(0.4rem, 0.8vh); }
+.w-row { display: flex; gap: min(0.4rem, 0.8vh); }
+.w-cell {
+  width: min(3.2rem, 6.2vh);
+  height: min(3.2rem, 6.2vh);
+  border: 2px solid var(--line);
+  border-radius: 0.25rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: min(1.6rem, 3.2vh);
+  color: var(--numeral);
+}
+.w-cell.filled { border-color: var(--silver-dim); }
+.w-cell.hit { background: #4fa06a; border-color: #4fa06a; color: #fff; }
+.w-cell.near { background: #c9a227; border-color: #c9a227; color: #1a1710; }
+.w-cell.miss { background: var(--surface-2); border-color: var(--surface-2); color: var(--silver-dim); }
+.w-msg { font-size: min(1rem, 2.2vh); color: var(--silver); min-height: 2.4vh;
+  display: flex; align-items: center; gap: 0.8rem; }
+.w-keys { display: flex; gap: 0.3rem; justify-content: center; margin-top: 0.3vh; }
+.w-key {
+  min-width: 2.5rem;
+  height: min(3.2rem, 5.6vh);
+  border-radius: 0.35rem; border: 0;
+  background: var(--surface-2); color: var(--numeral);
+  font-family: inherit; font-size: min(1rem, 2.4vh);
+  cursor: pointer; touch-action: manipulation;
+}
+.w-key.wide { min-width: 4.6rem; font-size: min(0.85rem, 2vh); }
+.w-key.hit { background: #4fa06a; color: #fff; }
+.w-key.near { background: #c9a227; color: #1a1710; }
+.w-key.miss { background: #2a2a2e; color: var(--silver-dim); }
+
+/* --- memory --- */
+.mem-wrap { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.mem-score { display: flex; gap: 2rem; font-size: 1.1rem; color: var(--silver-dim); }
+.mem-score .on { color: var(--teal); }
+.mem-grid { display: grid; grid-template: repeat(4, 5rem) / repeat(4, 5rem); gap: 0.6rem; }
+.mem-card { border-radius: 0.5rem; border: 1px solid var(--line); background: var(--surface-2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; }
+.mem-card.open { border-color: var(--teal); background: rgba(var(--accent-rgb), .12); }
+.mem-card.done { opacity: 0.4; }
+.mem-card svg { width: 60%; height: 60%; stroke: var(--teal); fill: none; stroke-width: 1.6; stroke-linecap: round; }
+
+/* --- connect four --- */
+.c4-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.7rem; }
+.c4-turn { display: flex; align-items: center; gap: 0.7rem; font-size: 1.3rem; color: var(--numeral); }
+.c4-chip { width: 1.2rem; height: 1.2rem; border-radius: 50%; display: inline-block; }
+.c4-chip.p1, .c4-cell.p1 { background: var(--teal); }
+.c4-chip.p2, .c4-cell.p2 { background: var(--orange); }
+/* Cells capped by viewport height: six rows plus the drop bar at a fixed rem
+   size overflowed the modal. */
+.c4-cols { display: grid; grid-template-columns: repeat(7, min(4.2rem, 8.4vh)); gap: min(0.4rem, 0.8vh); }
+.c4-drop {
+  height: min(2.6rem, 5.2vh);
+  border-radius: 0.3rem;
+  /* solid surface with a tinted border and an arrow - a dashed outline on
+     transparent was invisible against the dark background */
+  border: 2px solid var(--line);
+  background: var(--surface-2);
+  font-size: min(1rem, 2.2vh);
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.c4-drop:active { filter: brightness(1.6); }
+.c4-board { display: grid; grid-template: repeat(6, min(4.2rem, 8.4vh)) / repeat(7, min(4.2rem, 8.4vh));
+  gap: min(0.4rem, 0.8vh); padding: min(0.5rem, 1vh); background: var(--surface-2); border-radius: 0.5rem; }
+.c4-cell { border-radius: 50%; background: var(--bg); }
+.c4-wrap { gap: 1vh; }
+.c4-turn { font-size: min(1.3rem, 2.8vh); }
+
+/* --- dots and boxes --- */
+.db-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.8rem; }
+.db-grid { display: grid; grid-template-columns: repeat(9, auto); align-items: center; justify-items: center; }
+.db-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--silver-dim); }
+.db-h { width: 3.4rem; height: 0.5rem; border: 0; border-radius: 0.25rem; background: var(--surface-2); cursor: pointer; }
+.db-v { width: 0.5rem; height: 3.4rem; border: 0; border-radius: 0.25rem; background: var(--surface-2); cursor: pointer; }
+.db-h.p1, .db-v.p1 { background: var(--teal); }
+.db-h.p2, .db-v.p2 { background: var(--orange); }
+.db-box { width: 3.4rem; height: 3.4rem; }
+.db-box.p1 { background: rgba(var(--accent-rgb), .22); }
+.db-box.p2 { background: rgba(var(--warn-rgb), .22); }
+
+/* --- snake / breakout --- */
+.snake-wrap, .bo-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; }
+/* Constrained by HEIGHT, not width. A 16:9 canvas filling the modal's width is
+   taller than the modal itself, which pushed the paddle off the bottom edge.
+   Canvas has intrinsic dimensions, so max-height with auto width keeps the
+   aspect ratio and fits the visible area. */
+.snake-wrap canvas, .bo-wrap canvas, #fb-canvas {
+  border-radius: 0.5rem;
+  border: 1px solid var(--line);
+  touch-action: none;
+  max-height: 58vh;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+}
+.bo-wrap, .snake-wrap { width: 100%; align-items: center; }
+.dpad { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+.dpad > div { display: flex; gap: 3.4rem; }
+.dpad button { width: 3.6rem; height: 3.6rem; border-radius: 0.5rem; border: 1px solid var(--line);
+  background: var(--surface-2); color: var(--silver); font-size: 1.1rem; cursor: pointer; touch-action: manipulation; }
+
+/* --- profiles + leaderboards --- */
+.prof-list { display: flex; flex-direction: column; gap: 0.6rem; width: min(40rem, 80%); }
+.prof-row { display: flex; gap: 0.6rem; align-items: center; }
+.prof-row.on .prof-pick { border-color: var(--teal); color: var(--teal); }
+.prof-pick { flex: 1; padding: 0.9rem; border-radius: 0.5rem; border: 1px solid var(--line);
+  background: var(--surface-2); color: var(--silver); font-family: inherit; font-size: 1.1rem; cursor: pointer; }
+.ghost-btn.small { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+
+.lb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: 1rem; }
+.lb-card { border: 1px solid var(--line); border-radius: 0.6rem; background: var(--surface-2); padding: 0.9rem; }
+.lb-title { display: flex; justify-content: space-between; font-size: 1.1rem; color: var(--numeral); margin-bottom: 0.6rem; }
+.lb-title span { font-size: 0.8rem; color: var(--silver-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+.lb-row { display: grid; grid-template-columns: 1.6rem 0.9rem 1fr auto; gap: 0.6rem;
+  align-items: center; padding: 0.3rem 0; font-size: 0.95rem; color: var(--silver); }
+.lb-dot { width: 0.9rem; height: 0.9rem; border-radius: 50%; }
+.lb-row.me { color: var(--teal); }
+.lb-row b { color: var(--silver-dim); font-weight: 400; }
+
+/* --- duo seats + profile colors --- */
+.seats { display: flex; gap: 1.4rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+.seat { flex: 1 1 20rem; max-width: 26rem; padding: 1rem; border-radius: 0.7rem;
+  border: 1px solid var(--line); background: var(--surface-2); }
+.seat-label { font-size: 1.05rem; color: var(--silver-dim); margin-bottom: 0.7rem; }
+.seat-opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.seat-opts .prof-pick.on { border-color: var(--teal); color: var(--teal); }
+.col-row { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.7rem; }
+.col-sw { width: 2.2rem; height: 2.2rem; border-radius: 50%; border: 2px solid transparent;
+  cursor: pointer; touch-action: manipulation; }
+.col-sw.on { border-color: var(--numeral); transform: scale(1.12); }
+.prof-dot { width: 1rem; height: 1rem; border-radius: 50%; flex: 0 0 auto; }
+.ghost-btn[disabled] { opacity: 0.35; }
+
+/* --- new record celebration --- */
+.record-wrap {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1vh; width: 100%; min-height: 58vh; cursor: pointer; user-select: none;
+}
+.record-burst {
+  width: min(9rem, 16vh); height: min(9rem, 16vh);
+  display: flex; align-items: center; justify-content: center;
+  animation: recordPop 0.5s cubic-bezier(.2,1.5,.4,1) both;
+}
+.record-burst svg {
+  width: 100%; height: 100%;
+  fill: var(--rc); stroke: none;
+  filter: drop-shadow(0 0 2.4rem var(--rc));
+}
+.record-title {
+  font-size: min(1.1rem, 2.4vh); letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--silver-dim);
+}
+.record-value { font-size: min(4.4rem, 9vh); line-height: 1; font-weight: 500; }
+.record-who { font-size: min(1.6rem, 3.4vh); }
+.record-detail { font-size: min(1rem, 2.2vh); color: var(--silver-dim); }
+
+@keyframes recordPop {
+  from { transform: scale(0.3) rotate(-25deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* leaderboard record reads hotter than a personal best */
+.record-wrap.global .record-title { color: var(--numeral); }
+.record-wrap.global .record-value { text-shadow: 0 0 3rem currentColor; }
