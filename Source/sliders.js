@@ -1,65 +1,77 @@
-// const downloadToFile = (content, filename, contentType) => {
-//     const a = document.createElement('a');
-//     const file = new Blob([content], {type: contentType});
-    
-//     a.href= URL.createObjectURL(file);
-//     a.download = filename;
-//     a.click();
-  
-//       URL.revokeObjectURL(a.href);
-//   };
-  
-//   document.querySelector('#btnSave').addEventListener('click', () => {
-//     const textArea = document.querySelector('textarea');
-    
-//     downloadToFile(textArea.value, 'my-new-file.txt', 'text/plain');
-//   });
+/* Lights tab: RGB sliders driving the strip over GPIO PWM.
+ *
+ * The previous version updated a CSS preview swatch and called updateData(),
+ * which was an empty stub - the sliders were not connected to anything.
+ */
 
+const rSlider = document.getElementById('redRange');
+const rOutput = document.getElementById('redVal');
+const gSlider = document.getElementById('greenRange');
+const gOutput = document.getElementById('greenVal');
+const bSlider = document.getElementById('blueRange');
+const bOutput = document.getElementById('blueVal');
 
+/* A drag fires oninput continuously. Sending every event would flood the
+   socket and the helper's stdin, so coalesce to one write per frame and always
+   send the final position. */
+let pendingLights = null;
+let lightsFrame = null;
 
-
-
-
-let data = "";
-
-function updateData() {
-    // data = rSlider.value + " " + gSlider.value + " " + bSlider.value;
-    // fs.writeFile('pytest.txt', data, (err) => {
-    //     if (err) throw err;
-    // })
-    const temp = "temp";
+function pushLights() {
+  lightsFrame = null;
+  if (!pendingLights) return;
+  socket.emit('lights:set', pendingLights);
+  pendingLights = null;
 }
 
-// Red Setup
-var rSlider = document.getElementById("redRange");
-var rOutput = document.getElementById("redVal");
-// Green Setup
-var gSlider = document.getElementById("greenRange");
-var gOutput = document.getElementById("greenVal");
-// Blue Setup
-var bSlider = document.getElementById("blueRange");
-var bOutput = document.getElementById("blueVal");
-
-// Red Output
-rOutput.innerHTML = rSlider.value;
-rSlider.oninput = function() {
-  rOutput.innerHTML = this.value;
-  document.documentElement.style.setProperty(`--redVal`, rSlider.value);
-  updateData();
+function queueLights(patch) {
+  pendingLights = { ...(pendingLights || {}), ...patch };
+  if (lightsFrame === null) lightsFrame = requestAnimationFrame(pushLights);
 }
 
-// Green Output
-gOutput.innerHTML = gSlider.value;
-gSlider.oninput = function() {
-  gOutput.innerHTML = this.value;
-  document.documentElement.style.setProperty(`--greenVal`, gSlider.value);
-  updateData();
+function paintSwatch() {
+  const root = document.documentElement.style;
+  root.setProperty('--redVal', rSlider.value);
+  root.setProperty('--greenVal', gSlider.value);
+  root.setProperty('--blueVal', bSlider.value);
 }
 
-// Blue Output
-bOutput.innerHTML = bSlider.value;
-bSlider.oninput = function() {
-  bOutput.innerHTML = this.value;
-  document.documentElement.style.setProperty(`--blueVal`, bSlider.value);
-  updateData();
+function bindChannel(slider, output, key) {
+  if (!slider || !output) return;
+  output.innerHTML = slider.value;
+  slider.oninput = function () {
+    output.innerHTML = this.value;
+    paintSwatch();
+    queueLights({ [key]: Number(this.value) });
+  };
 }
+
+bindChannel(rSlider, rOutput, 'r');
+bindChannel(gSlider, gOutput, 'g');
+bindChannel(bSlider, bOutput, 'b');
+
+/* Reflect whatever the strip is actually set to, including the colour restored
+   from config at boot - the sliders should never disagree with the hardware. */
+socket.on('lights:state', (state) => {
+  if (!state) return;
+  const set = (slider, output, value) => {
+    if (!slider || document.activeElement === slider) return;
+    slider.value = value;
+    if (output) output.innerHTML = value;
+  };
+  set(rSlider, rOutput, state.r);
+  set(gSlider, gOutput, state.g);
+  set(bSlider, bOutput, state.b);
+  paintSwatch();
+
+  const badge = document.getElementById('lights-backend');
+  if (badge) {
+    badge.innerText = state.backend ? state.backend : 'no GPIO';
+    badge.classList.toggle('warn', !state.backend);
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  paintSwatch();
+  socket.emit('lights:get');
+});
