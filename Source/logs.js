@@ -1,35 +1,42 @@
 const THUMBS = {
   testing: {
     label: 'Testing',
-    accent: '#3fd0b0',
-    svg: '<path d="M26 6v12L14 34h36L38 18V6"/><path d="M22 6h20"/><path d="M20 26h24"/><circle cx="28" cy="29" r="1.6"/><circle cx="37" cy="30" r="1.2"/>'
+    accent: '#e8503a',
+    svg: '<rect x="5" y="5" width="54" height="29" rx="2.5" opacity=".55"/><path d="M5 19.5h54M23 5v29M41 5v29" opacity=".25"/><path d="M8 24c5 0 5-11 9-11s4 15 8 15 5-17 9-17 5 12 9 12 4-8 8-8 4 6 5 6" stroke-width="2"/>'
   },
   cruising: {
     label: 'Cruising',
-    accent: '#b7babc',
-    svg: '<path d="M4 32h56"/><path d="M24 32 30 10h4l6 22"/><path d="M31 14v3M31 21v3M31 28v2"/><circle cx="48" cy="14" r="6"/>'
+    accent: '#c9a227',
+    svg: '<path d="M4 34h56" opacity=".45"/><path d="M20 34 27 12h10l7 22"/><path d="M32 15v3.5M32 22v3.5M32 29v2.5" opacity=".7"/><path d="M8 26h7M49 26h7" opacity=".5"/><circle cx="52" cy="12" r="4.5"/>'
   },
   performance: {
     label: 'Performance',
-    accent: '#ff7a33',
-    svg: '<circle cx="32" cy="22" r="13"/><path d="M32 22 40 15"/><path d="M32 5v4"/><path d="M26 5h12"/><path d="M19 12l-3-3M45 12l3-3"/>'
+    accent: '#e8503a',
+    svg: '<path d="M4 34h56" opacity=".45"/><path d="M12 30a20 20 0 0 1 40 0"/><path d="M32 30 43 17" stroke-width="2.2"/><circle cx="32" cy="30" r="2.4" fill="currentColor" stroke="none"/><path d="M14 24l2.5 1M20 17l2 2M32 13v3M44 17l-2 2M50 24l-2.5 1" opacity=".7"/>'
   },
   canyon: {
     label: 'Canyon',
-    accent: '#2a8c78',
-    svg: '<path d="M2 34 20 10l10 13 8-9 22 20z"/><path d="M22 34c4-6 12-4 12-10s8-6 10-2"/>'
+    accent: '#4f8f6b',
+    svg: '<path d="M4 34h56" opacity=".4"/><path d="M28 34 44 11l7 9 5-5 8 19Z" opacity=".45"/><path d="M0 34 16 9l11 14 6-7 13 18Z" stroke-width="1.9"/><path d="M11 17.5h9" opacity=".55"/>'
   },
   track: {
     label: 'Track Day',
-    accent: '#e9edee',
-    svg: '<path d="M14 34V6"/><path d="M14 8h34v16H14z"/><path d="M14 8h8.5v5.3H14zM31 8h8.5v5.3H31zM22.5 13.3H31v5.3h-8.5zM39.5 13.3H48v5.3h-8.5zM14 18.6h8.5V24H14zM31 18.6h8.5V24H31z" fill="currentColor" stroke="none" opacity="0.55"/>'
+    /* var(--numeral) rather than a fixed colour: the outline is near-white,
+       which vanished against the light day-mode thumbnail background. This
+       flips to near-black in day and near-white at night. */
+    accent: 'var(--numeral)',
+    /* WeatherTech Raceway Laguna Seca. Traced from the IndyCar track outline:
+       the PNG was decoded with alpha composited onto white, the infield
+       flood-filled, and its boundary followed and simplified to 33 points. */
+    svg: '<path d="M35.6,4.0 L37.9,4.4 L46.3,12.2 L46.8,14.2 L45.8,15.8 L39.9,17.9 L34.0,23.3 L33.4,25.8 L35.4,31.2 L37.4,33.7 L39.7,34.0 L42.4,32.6 L45.6,28.3 L46.1,28.3 L46.1,29.2 L45.2,30.5 L40.8,34.0 L35.0,36.0 L22.0,36.0 L21.6,35.6 L21.8,34.6 L24.3,28.7 L24.5,27.1 L23.2,25.5 L18.4,22.4 L17.2,20.4 L17.9,19.4 L22.5,16.2 L23.1,15.1 L22.9,13.1 L23.2,12.8 L25.7,11.5 L35.6,4.0 Z" stroke-width="2.2"/>'
   },
   night: {
     label: 'Night Run',
     accent: '#6fa8c5',
-    svg: '<path d="M38 8a14 14 0 1 0 12 21A15 15 0 0 1 38 8z"/><path d="M16 12l1.2 3.2L20.4 16l-3.2 1.2L16 20l-1.2-2.8L11.6 16l3.2-.8z"/><path d="M22 26l.8 2 2 .8-2 .8L22 32l-.8-2.4-2-.8 2-.8z"/>'
+    svg: '<path d="M38 8a14 14 0 1 0 12 21A15 15 0 0 1 38 8z"/><path d="M16 12l1.2 3.2L20.4 16l-3.2 1.2L16 20l-1.2-2.8L11.6 16l3.2-.8z"/>'
   }
 };
+
 
 const ROAD_TYPES = ['Highway', 'Canyon', 'City', 'Backroad', 'Track', 'Parking Lot', 'Gravel', 'Rough'];
 

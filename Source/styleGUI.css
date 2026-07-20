@@ -872,8 +872,8 @@ body {
 }
 
 .thumb svg {
-  width: 60%;
-  height: 60%;
+  width: 74%;
+  height: 74%;
   stroke: currentColor;
   fill: none;
   stroke-width: 1.6;
@@ -1031,14 +1031,30 @@ textarea.text-input {
   overflow: hidden;
 }
 
+/* The picker is a deliberate choice the user makes once per log, so the art
+   needs to be legible - 3.4rem at 60% fill rendered these near-unreadable. */
 .thumb-option .thumb {
-  height: 3.4rem;
+  height: 9rem;
+  padding: 0.6rem;
   background: transparent;
   border: 0;
 }
 
 .thumb-option span {
-  padding-bottom: 0.45rem;
+  padding-bottom: 0.7rem;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+/* Scoped to the picker: log cards keep the smaller fill, but here the icon
+   should use nearly the whole tile. */
+.thumb-option .thumb svg {
+  width: 100%;
+  height: 100%;
+}
+
+.thumb-picker {
+  gap: 0.9rem;
 }
 
 .thumb-option.selected {
@@ -2689,4 +2705,50 @@ button.pill {
 :root[data-brand="jarvis"][data-theme="day"] .theme-option.selected,
 :root[data-brand="jarvis"][data-theme="day"] .ch-chip.on {
   background: rgba(142, 36, 16, 0.16);
+}
+
+/* ============================================================
+   Accent themes — selectable in Settings > Display.
+   Layered ON TOP of the brand palette: the brand decides the base
+   surfaces, the accent decides the highlight colour. Absent or
+   unrecognised resolves to the brand's own accent.
+   ============================================================ */
+:root[data-accent="purple"] {
+  --teal: #a56ee0;
+  --teal-dim: #b98cea;
+  --teal-glow: rgba(165, 110, 224, 0.35);
+  --accent-rgb: 165, 110, 224;
+  --needle: #a56ee0;
+  --needle-tip: #c9a8f0;
+  --needle-glow: rgba(165, 110, 224, 0.45);
+}
+
+:root[data-accent="purple"][data-theme="day"] {
+  --teal: #553091;
+  --teal-dim: #6a3fae;
+  --teal-glow: rgba(85, 48, 145, 0.28);
+  --accent-rgb: 85, 48, 145;
+  --needle: #553091;
+  --needle-tip: #8a63c4;
+  --needle-glow: rgba(85, 48, 145, 0.35);
+}
+
+:root[data-accent="green"] {
+  --teal: #4fc98a;
+  --teal-dim: #6fd8a1;
+  --teal-glow: rgba(79, 201, 138, 0.35);
+  --accent-rgb: 79, 201, 138;
+  --needle: #4fc98a;
+  --needle-tip: #9ce8c1;
+  --needle-glow: rgba(79, 201, 138, 0.45);
+}
+
+:root[data-accent="green"][data-theme="day"] {
+  --teal: #136b42;
+  --teal-dim: #1a8a55;
+  --teal-glow: rgba(19, 107, 66, 0.28);
+  --accent-rgb: 19, 107, 66;
+  --needle: #136b42;
+  --needle-tip: #3fa06f;
+  --needle-glow: rgba(19, 107, 66, 0.35);
 }

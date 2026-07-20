@@ -78,7 +78,7 @@ function settingsPayload() {
     axes: config.axes || analysis.DEFAULT_AXES,
     settings: { ...DEFAULT_SETTINGS, ...(config.settings || {}) },
     theme: config.theme || { mode: 'auto' },
-    branding: config.branding || { brand: 'eva' },
+    branding: { brand: 'eva', accent: 'default', ...(config.branding || {}) },
     vehicle: config.vehicle || { tireFactor: 1 }
   };
 }
@@ -157,6 +157,58 @@ function onImuData(data) {
       console.error('Error parsing IMU sample:', e.message);
     }
   });
+}
+
+const lightsScriptPath = path.join(sourceDir, 'lights.py');
+let lightsProcess = null;
+let lightsBackend = null;
+
+const DEFAULT_LIGHTS = { r: 0, g: 0, b: 0, brightness: 100 };
+
+function lightsState() {
+  return { ...DEFAULT_LIGHTS, ...(config.lights || {}) };
+}
+
+function startLights() {
+  if (lightsProcess) return;
+  try {
+    lightsProcess = spawn(resolvePython(), [lightsScriptPath]);
+  } catch (e) {
+    console.error('Could not start lights helper:', e.message);
+    return;
+  }
+  let buf = '';
+  lightsProcess.stdout.on('data', (data) => {
+    buf += data.toString();
+    const lines = buf.split('\n');
+    buf = lines.pop();
+    for (const line of lines) {
+      if (!line.trim().startsWith('{')) continue;
+      try {
+        const msg = JSON.parse(line);
+        if (msg.event === 'ready') {
+          lightsBackend = msg.backend;
+          console.log('Lights backend:', msg.backend || 'none');
+          /* restore the colour the car was left on */
+          sendLights(lightsState());
+        }
+        if (msg.event === 'error') console.error('Lights:', msg.message);
+      } catch (e) {
+        /* ignore malformed line */
+      }
+    }
+  });
+  lightsProcess.stderr.on('data', (d) => console.error('Lights stderr:', d.toString().trim()));
+  lightsProcess.on('close', () => { lightsProcess = null; lightsBackend = null; });
+}
+
+function sendLights(payload) {
+  if (!lightsProcess) return;
+  try {
+    lightsProcess.stdin.write(JSON.stringify(payload) + '\n');
+  } catch (e) {
+    console.error('Lights write failed:', e.message);
+  }
 }
 
 /* Deferred rather than started at require time. resolvePython() probes with
@@ -475,6 +527,39 @@ io.on('connection', (socket) => {
     socket.emit('bt:volume', { percent: v });
   }));
 
+  socket.on('lights:set', guard((payload) => {
+    const next = { ...lightsState() };
+    for (const key of ['r', 'g', 'b', 'brightness']) {
+      if (payload[key] !== undefined) {
+        const n = Number(payload[key]);
+        if (isFinite(n)) next[key] = Math.max(0, Math.min(key === 'brightness' ? 100 : 255, Math.round(n)));
+      }
+    }
+    sendLights(next);
+    /* persisted immediately so the strip comes back to the same colour after
+       an ignition cycle rather than defaulting to off */
+    config = { ...config, lights: next };
+    saveConfig(config);
+    io.emit('lights:state', { ...next, backend: lightsBackend });
+  }));
+
+  socket.on('lights:get', guard(() => {
+    socket.emit('lights:state', { ...lightsState(), backend: lightsBackend });
+  }));
+
+  socket.on('settings:accent', guard((payload) => {
+    const accent = ['purple', 'green'].includes(payload.accent) ? payload.accent : 'default';
+    config = { ...config, branding: { ...(config.branding || {}), accent } };
+    saveConfig(config);
+    io.emit('config', settingsPayload());
+    /* applied before first paint, so it needs a reload to take effect */
+    for (const win of BrowserWindow.getAllWindows()) {
+      const u = new URL(win.webContents.getURL());
+      u.searchParams.set('accent', accent);
+      win.loadURL(u.toString());
+    }
+  }));
+
   socket.on('settings:brand', guard((payload) => {
     const brand = payload.brand === 'jarvis' ? 'jarvis' : 'eva';
     config = { ...config, branding: { brand } };
@@ -611,6 +696,13 @@ function bootBrand() {
   return b === 'jarvis' ? 'jarvis' : 'eva';
 }
 
+/* Accent sits on top of the brand palette. Absent config means "use the
+   brand's own accent", so clearing it is always safe. */
+function bootAccent() {
+  const a = config.branding && config.branding.accent;
+  return a === 'purple' || a === 'green' ? a : 'default';
+}
+
 function bootTheme() {
   const mode = (config.theme && config.theme.mode) || 'auto';
   if (mode === 'day' || mode === 'night') return mode;
@@ -639,7 +731,7 @@ const createWindow = () => {
 
   /* mode rides along so theme.js starts in the right state instead of
      assuming 'auto' and re-resolving to the wrong palette before config lands */
-  const query = { theme, mode, brand: bootBrand() };
+  const query = { theme, mode, brand: bootBrand(), accent: bootAccent() };
   /* hand over the fix too, so an 'auto' renderer resolves identically to main
      instead of falling back to 7am/7pm and disagreeing */
   const fix = gpsStatus.lastFix;
@@ -654,6 +746,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
   createWindow();
   setTimeout(startImuLogger, IMU_START_DELAY_MS);
+  setTimeout(startLights, IMU_START_DELAY_MS + 400);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

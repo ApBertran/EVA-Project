@@ -43,6 +43,13 @@ const BRAND = BRANDS[ACTIVE_BRAND] || BRANDS.eva;
 
 (function applyBrand() {
   document.documentElement.setAttribute('data-brand', ACTIVE_BRAND);
+  /* accent is independent of brand - it retints the highlight colour only */
+  try {
+    const a = new URLSearchParams(window.location.search).get('accent');
+    if (a === 'purple' || a === 'green') document.documentElement.setAttribute('data-accent', a);
+  } catch (e) {
+    /* no accent override */
+  }
   /* The DOM may not exist yet when this runs from <head>; fill in the text
      nodes once it does. */
   const paint = () => {
