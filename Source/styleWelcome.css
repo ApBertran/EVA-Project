@@ -122,3 +122,96 @@ body {
   background: linear-gradient(90deg, #0d8f78, #0a6e5c);
   box-shadow: 0 0 1vw rgba(10, 110, 92, 0.4);
 }
+
+/* ============================================================
+   JARVIS boot sequence — Hot Rod red, Terminal mono, soft aura.
+
+   Deliberately NIGHT-ONLY, in both themes: the dark boot screen simply
+   looks better, and the jump to a light interface is handled by the
+   handoff veil below rather than by lightening the boot screen itself.
+   ============================================================ */
+:root[data-brand="jarvis"] body,
+:root[data-brand="jarvis"][data-theme="day"] body {
+  background: radial-gradient(ellipse at 50% 45%, #1c0f0c 0%, #0e0605 65%);
+  color: #e6c9a8;
+}
+
+:root[data-brand="jarvis"] .mark,
+:root[data-brand="jarvis"][data-theme="day"] .mark {
+  font-family: ui-monospace, "DejaVu Sans Mono", Menlo, monospace;
+  font-weight: 300;
+  font-size: 9.5vw;
+  letter-spacing: 0.35em;
+  /* letter-spacing also trails the final glyph, which pushes the word left of
+     centre - cancel exactly one tracking unit */
+  margin-right: -0.35em;
+  color: #e8503a;
+  text-shadow: 0 0 4vw rgba(232, 80, 58, 0.5);
+  /* pure opacity fade, no movement */
+  opacity: 0;
+  animation: jfade 2.1s ease-in-out forwards;
+}
+
+:root[data-brand="jarvis"] .typewriter,
+:root[data-brand="jarvis"][data-theme="day"] .typewriter {
+  font-family: ui-monospace, "DejaVu Sans Mono", Menlo, monospace;
+  font-weight: 300;
+  font-size: 1.9vw;
+  letter-spacing: 0.14em;
+  margin-right: -0.14em;
+  color: #e6c9a8;
+  /* the base EVA rule types this in; JARVIS fades instead */
+  clip-path: none;
+  opacity: 0;
+  /* starts only once the wordmark has fully resolved */
+  animation: jfade 2.1s ease-in-out 2.1s forwards;
+}
+
+:root[data-brand="jarvis"] .typewriter::after,
+:root[data-brand="jarvis"][data-theme="day"] .typewriter::after {
+  display: none;                 /* no typing caret when fading */
+}
+
+:root[data-brand="jarvis"] .boot-bar,
+:root[data-brand="jarvis"][data-theme="day"] .boot-bar {
+  background: #26120e;
+  opacity: 0;
+  animation: jfade 1.4s ease-in-out 3.6s forwards;
+}
+
+:root[data-brand="jarvis"] .boot-bar::after,
+:root[data-brand="jarvis"][data-theme="day"] .boot-bar::after {
+  background: linear-gradient(90deg, #a33422, #e8503a);
+  box-shadow: 0 0 1vw rgba(232, 80, 58, 0.6);
+  animation: fill 5s ease-in-out forwards;
+}
+
+@keyframes jfade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ---- handoff ----
+   A solid panel the exact color of the interface's empty space fades over
+   the boot screen, and only once it is fully opaque does the app navigate.
+   The interface therefore appears behind a background that already matches,
+   so there is no flash between the two.
+
+   It is a separate element rather than a transition on body: the boot screen
+   uses a gradient background, and gradients cannot animate to a flat color. */
+:root { --handoff-bg: #0b0d0e; }
+:root[data-theme="day"] { --handoff-bg: #d3d9db; }
+:root[data-brand="jarvis"] { --handoff-bg: #100e0b; }
+:root[data-brand="jarvis"][data-theme="day"] { --handoff-bg: #e6e0d6; }
+
+.handoff-veil {
+  position: fixed;
+  inset: 0;
+  background: var(--handoff-bg);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.85s ease-in-out;
+}
+
+body.handoff .handoff-veil { opacity: 1; }
